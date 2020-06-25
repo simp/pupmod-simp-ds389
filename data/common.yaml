@@ -1,0 +1,19 @@
+---
+ds389::config::attributes_requiring_restart:
+  - nsslapd-changelogdir
+  - nsslapd-changelogmaxage
+  - nsslapd-changelogmaxentries
+  - nsslapd-changelogsuffix
+  - nsslapd-db-locks
+  - nsslapd-ldapifilepath
+  - nsslapd-ldapilisten
+  - nsslapd-listenhost
+  - nsslapd-maxdescriptors
+  - nsslapd-plugin
+  - nsslapd-port
+  - nsslapd-return-exact-case
+  - nsslapd-schema-ignore-trailing-spaces
+  - nsslapd-securelistenhost
+  - nsslapd-secureport
+  - nsslapd-sslclientauth
+  - nsslapd-workingdir

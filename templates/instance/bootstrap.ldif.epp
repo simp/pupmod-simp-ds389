@@ -1,0 +1,89 @@
+<%- |
+  String[2]  $base_dn,
+  Integer[0] $users_group_id,
+  Integer[0] $administrators_group_id
+| -%>
+# Create the top-level database
+dn: cn="<%= $base_dn %>",cn=mapping tree,cn=config
+cn: <%= $base_dn %>
+objectClass: top
+objectClass: extensibleObject
+objectClass: nsMappingTree
+nsslapd-state: backend
+nsslapd-backend: UserData
+
+dn: <%= $base_dn %>
+dc: <%= split(split($base_dn, ',')[0], /(?i:dc=)/)[-1] %>
+objectClass: top
+objectClass: domain
+
+dn: ou=Hosts,<%= $base_dn %>
+ou: Hosts
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Rpc,<%= $base_dn %>
+ou: Rpc
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Services,<%= $base_dn %>
+ou: Services
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Mounts,<%= $base_dn %>
+ou: Mounts
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Networks,<%= $base_dn %>
+ou: Networks
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=People,<%= $base_dn %>
+ou: People
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Group,<%= $base_dn %>
+ou: Group
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Netgroup,<%= $base_dn %>
+ou: Netgroup
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Protocols,<%= $base_dn %>
+ou: Protocols
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Aliases,<%= $base_dn %>
+ou: Aliases
+objectClass: top
+objectClass: organizationalUnit
+
+dn: cn=localhost.localdomain,ou=Hosts,<%= $base_dn %>
+objectClass: top
+objectClass: ipHost
+ipHostNumber: 127.0.0.1
+cn: localhost.localdomain
+cn: localhost
+
+dn: cn=users,ou=Group,<%= $base_dn %>
+objectClass: groupOfUniqueNames
+objectClass: posixGroup
+objectClass: top
+cn: users
+gidNumber: <%= $users_group_id %>
+
+dn: cn=administrators,ou=Group,<%= $base_dn %>
+objectClass: groupOfUniqueNames
+objectClass: posixGroup
+objectClass: top
+cn: administrators
+gidNumber: <%= $administrators_group_id %>

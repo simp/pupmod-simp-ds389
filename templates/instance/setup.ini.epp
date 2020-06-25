@@ -1,0 +1,49 @@
+<%- |
+# @summary INI Template for a directory server instance
+#
+# All options can be found at
+#
+# https://access.redhat.com/documentation/en-us/red_at_directory_server/10/html/installation_guide/preparing_for_a_directory_server_installation-installation_overview
+
+  String[1]                  $server_identifier,
+  String[2]                  $base_dn,
+  String[2]                  $root_dn,
+  String[1]                  $service_user,
+  String[1]                  $service_group,
+  String[1]                  $machine_name,
+  Simplib::Port              $port,
+  Simplib::Domain            $admin_domain,
+  Simplib::IP                $admin_service_listen_address,
+  Simplib::Port              $admin_service_port,
+  String[2]                  $admin_user,
+  String[2]                  $admin_password,
+  Optional[Stdlib::Unixpath] $bootstrap_ldif_file = undef,
+| -%>
+# This file managed by Puppet
+[General]
+SuiteSpotUserID=<%= $service_user %>
+SuiteSpotGroup=<%= $service_group %>
+AdminDomain=<%= $admin_domain %>
+FullMachineName=<%= $machine_name %>
+ConfigDirectoryLdapURL=ldap://<%= $machine_name %>:<%= $port %>/o=NetscapeRoot
+ConfigDirectoryAdminID=<%= $admin_user %>
+ConfigDirectoryAdminPwd=<%= $admin_password %>
+
+[slapd]
+ServerIdentifier=<%= $server_identifier%>
+ServerPort=<%= $port %>
+Suffix=<%= $base_dn %>
+RootDN=<%= $root_dn %>
+RootDNPwd=<%= $admin_password %>
+SlapdConfigForMC=yes
+AddOrgEntries=yes
+AddSampleEntries=no
+<% if $bootstrap_ldif_file { -%>
+InstallLdifFile=<%= $bootstrap_ldif_file %>
+<% } -%>
+
+[admin]
+Port=<%= $admin_service_port %>
+ServerAdminID=<%= $admin_user %>
+ServerAdminPwd=<%= $admin_password %>
+ServerIpAddress=<%= $admin_service_listen_address %>
