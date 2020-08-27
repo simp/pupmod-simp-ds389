@@ -100,8 +100,8 @@ puppet apply -e '$dn = simplib::ldap::domain_to_dn($facts["domain"], true); noti
 numbers are unique! If port numbers overlap, then issues will arise when
 managing the services.
 
-You must specify a `base_dn` and a `root_dn` for each instance since these are
-what define both the root of the directory (`base_dn`) and the adminstrative
+You must specify a `base_dn` and a `root_dn` for each instance, since these are
+what define both the root of the directory (`base_dn`) and the administrative
 user of the directory (`root_dn`). These **can overlap** between instances but
 it is recommended that you keep them unique.
 
