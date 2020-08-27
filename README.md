@@ -34,7 +34,7 @@ The module is named `ds389` because puppet modules cannot start with a digit.
 See [REFERENCE.md](./REFERENCE.md) for full API details.
 
   ---
-  > TLS connections are currently not suported but this is on the short list of things to fix
+  > TLS connections are currently not supported, but [this is on the short list](https://simp-project.atlassian.net/browse/SIMP-8340) of future improvements.
   ---
 
 For more details, please see the [vendor documentation](https://access.redhat.com/documentation/en-us/red_hat_directory_server/10/html/installation_guide/preparing_for_a_directory_server_installation-installation_overview).
