@@ -136,10 +136,13 @@ ldapsearch -x \
 
 ### Deleting instances
 
-Instances are **NOT** automatically purged when they cease being managed by
-puppet. This is because users may have set up instances using the GUI, or
-some other method, and automatically purging unmanaged instances could be
-catastrophic.
+LDAP instances are **NOT** automatically purged when they cease being managed by
+Puppet. This is a safety precaution, to protect users who may have set up
+instances using some other method, like the [management console
+GUI][java-console].  Automatic purging could result in the catastrophic
+loss of such valid yet unmanaged LDAP instances.
+
+[java-console]: https://access.redhat.com/documentation/en-us/red_hat_directory_server/10/html/administration_guide/starting_management_console
 
 If you wish to remove an instance, you can either do it directly in puppet:
 
