@@ -144,7 +144,7 @@ loss of such valid yet unmanaged LDAP instances.
 
 [java-console]: https://access.redhat.com/documentation/en-us/red_hat_directory_server/10/html/administration_guide/starting_management_console
 
-If you wish to remove an instance, you can either do it directly in puppet:
+If you wish to remove an instance, you can either do it directly in Puppet:
 
 ```puppet
 ds389::instance { 'test2':
