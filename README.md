@@ -26,8 +26,12 @@
 
 ## Description
 
-This module configures a [389DS](https://directory.fedoraproject.org/) server
-with the option to bootstrap the traditional SIMP default hierarchy.
+This module manages the [389 Directory Server][389ds] (389DS), an
+enterprise-class open source LDAP server for Linux.  Options are provided to
+both create a default LDAP instance and to bootstrap it with SIMP's traditional
+LDAP hierarchy.
+
+[389ds]: https://directory.fedoraproject.org/
 
 The module is named `ds389` because puppet modules cannot start with a digit.
 
