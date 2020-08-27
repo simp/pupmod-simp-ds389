@@ -164,7 +164,7 @@ ds389::instances:
     ensure: absent
 ```
 
-Just remember that puppet will attempt to remove this instance every time it
+Just remember that Puppet will attempt to remove this instance every time it
 runs! This means that if you create an instance by hand with the name `test2`
 then puppet will remove it at the next run.
 
