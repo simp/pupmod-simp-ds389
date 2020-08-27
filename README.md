@@ -185,16 +185,18 @@ ds389::enable_admin_service: true
   > set in the `ds389::admin_password` parameter.
   ---
 
-### Running the GUI
+### Running the 389DS management console GUI
 
-The current 389DS GUI is a thick client solution that you will probably want to
-forward over SSH to your remote system. It is not recommended that you expose
-the admin port to the outside world.
+The Java-based [389DS management console][java-console] is a thick client UI.
+You will probably want to forward the UI itself over SSH to your remote system,
+as it is _not_ recommended to expose the admin port to the outside world.
 
   ---
-  > Currently this module does not support this functionality because it is slated
-  > to change by the vendor in the near future.
+  > This module does not directly manage the DS management console, because
+  > it is [slated by the vendor to change in the near future][console-deprecation].
   ---
+  
+[console-deprecation]: https://access.redhat.com/documentation/en-us/red_hat_directory_server/10/html/release_notes/deprecated-functionality-10_5_0  
 
 Run the following (or use Puppet) to install the necessary packages:
 
