@@ -50,7 +50,7 @@ If you find any issues, please submit them via [JIRA](https://simp-project.atlas
 Please read our [Contribution Guide](https://simp.readthedocs.io/en/stable/contributors_guide/index.html).
 
 This module should be used within the SIMP ecosystem and will be of limited
-independent use
+independent use when included on its own.
 
 ## Setup
 
