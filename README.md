@@ -61,8 +61,9 @@ no active instances and can be fully managed by hand.
 
 #### Enabling the default instance
 
-If you are coming from the `simp-openldap` module, you will probably want the
-default intance and schema populated. To do this, add the following to hiera:
+If you are coming from the `simp-openldap` module, you will probably want to
+populate the default LDAP instance and schema.  To do this, add the following to
+hiera:
 
 ```yaml
 ---
