@@ -1,9 +1,6 @@
 # Modifies the running directory server configuration and restarts the service
 # when necessary.
 #
-# **IMPORTANT** Do not set sensitive values with this until it switches over to
-# being a native type!
-#
 # @option name [String]
 #   A unique description of the desired configuration setting
 #
@@ -89,8 +86,8 @@ define ds389::config::item (
 
   # This should be a provider
   exec { "Set ${base_dn},${key} on ${_service_name}":
-    command => $_command,
-    unless  => $_unless,
+    command => Sensitive($_command),
+    unless  => Sensitive($_unless),
     path    => ['/bin', '/usr/bin']
   }
 

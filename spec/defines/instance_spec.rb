@@ -192,7 +192,7 @@ describe 'ds389::instance', type: :define do
 
             it {
               expect(subject).to create_file("/usr/share/puppet_ds389_config/#{title}_ds_bootstrap.ldif")
-                .with_content(params[:bootstrap_ldif_content])
+                .with_content(sensitive(params[:bootstrap_ldif_content]))
                 .that_notifies("Exec[Setup #{title} DS]")
             }
 

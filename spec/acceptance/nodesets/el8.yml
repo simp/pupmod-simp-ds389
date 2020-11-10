@@ -1,0 +1,51 @@
+<%
+  if ENV['BEAKER_HYPERVISOR']
+    hypervisor = ENV['BEAKER_HYPERVISOR']
+  else
+    hypervisor = 'vagrant'
+  end
+-%>
+HOSTS:
+  el8:
+    roles:
+      - directory_server
+      - default
+    platform:   el-8-x86_64
+    box:        centos/8
+    hypervisor: <%= hypervisor %>
+    vagrant_memsize: 4096
+    vagrant_cpus: 4
+    yum_repos:
+      epel:
+        mirrorlist: 'https://mirrors.fedoraproject.org/metalink?repo=epel-8&arch=$basearch'
+        gpgkeys:
+          - https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-$releasever
+
+# el7-client:
+#   platform:   el-7-x86_64
+#   box:        centos/7
+#   hypervisor: <%= hypervisor %>
+#   yum_repos:
+#     epel:
+#       mirrorlist: 'https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch'
+#       gpgkeys:
+#         - https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-$releasever
+
+# el6-client:
+#   platform:   el-6-x86_64
+#   box:        centos/6
+#   hypervisor: <%= hypervisor %>
+#   yum_repos:
+#     epel:
+#       mirrorlist: 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch'
+#       gpgkeys:
+#         - https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-$releasever
+
+CONFIG:
+  log_level: verbose
+  type: aio
+  vagrant_memsize: 256
+  vagrant_cpus: 1
+<% if ENV['BEAKER_PUPPET_ENVIRONMENT'] -%>
+  puppet_environment: <%= ENV['BEAKER_PUPPET_ENVIRONMENT'] %>
+<% end -%>

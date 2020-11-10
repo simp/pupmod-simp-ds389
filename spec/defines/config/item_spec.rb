@@ -29,14 +29,18 @@ describe 'ds389::config::item', type: :define do
         it {
           expect(subject).to create_exec("Set cn=config,#{params[:key]} on dirsrv@#{params[:service_name]}")
             .with_command(
-              # rubocop:disable Layout/LineLength
-              %(echo -e "dn: cn=config\\nchangetype: modify\\nreplace: #{params[:key]}\\n#{params[:key]}: #{params[:value]}" | ldapmodify  -x -D '#{params[:admin_dn]}' -y '#{params[:pw_file]}' -H ldap://127.0.0.1:389),
-              # rubocop:enable Layout/LineLength
+              sensitive(
+                # rubocop:disable Layout/LineLength
+                %(echo -e "dn: cn=config\\nchangetype: modify\\nreplace: #{params[:key]}\\n#{params[:key]}: #{params[:value]}" | ldapmodify  -x -D '#{params[:admin_dn]}' -y '#{params[:pw_file]}' -H ldap://127.0.0.1:389)
+                # rubocop:enable Layout/LineLength
+              ),
             )
             .with_unless(
-              # rubocop:disable Layout/LineLength
-              %(test `ldapsearch  -x -D '#{params[:admin_dn]}' -y '#{params[:pw_file]}' -H ldap://127.0.0.1:389 -LLL -s base -b 'cn=config' '#{params[:key]}' | grep -e '^#{params[:key]}' | awk '{ print $2 }'` == '#{params[:value]}'),
-              # rubocop:enable Layout/LineLength
+              sensitive(
+                # rubocop:disable Layout/LineLength
+                %(test `ldapsearch  -x -D '#{params[:admin_dn]}' -y '#{params[:pw_file]}' -H ldap://127.0.0.1:389 -LLL -s base -b 'cn=config' '#{params[:key]}' | grep -e '^#{params[:key]}' | awk '{ print $2 }'` == '#{params[:value]}')
+                # rubocop:enable Layout/LineLength
+              ),
             )
             .with_path(['/bin', '/usr/bin'])
         }
