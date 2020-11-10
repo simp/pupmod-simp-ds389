@@ -186,6 +186,14 @@ variables:
 # Puppet Versions
 #-----------------------------------------------------------------------
 
+# Only needed for the module build test
+.pup_5: &pup_5
+  image: 'ruby:2.5'
+  variables:
+    PUPPET_VERSION: '~> 5.0'
+    BEAKER_PUPPET_COLLECTION: 'puppet5'
+    MATRIX_RUBY_VERSION: '2.5'
+
 .pup_6: &pup_6
   image: 'ruby:2.5'
   variables:
@@ -250,6 +258,15 @@ sanity_checks:
     - 'bundle exec rake pkg:compare_latest_tag'
     - 'bundle exec rake pkg:create_tag_changelog'
     - 'bundle exec puppet module build'
+
+# This was removed in favor of PDK nonsense
+module_build:
+  <<: *pup_5
+  <<: *setup_bundler_env
+  stage: 'sanity'
+  tags: ['docker']
+  script:
+    - bundle exec puppet module build
 
 # Linting
 #-----------------------------------------------------------------------
