@@ -257,7 +257,6 @@ sanity_checks:
     - 'bundle exec rake pkg:check_version'
     - 'bundle exec rake pkg:compare_latest_tag'
     - 'bundle exec rake pkg:create_tag_changelog'
-    - 'bundle exec puppet module build'
 
 # This was removed in favor of PDK nonsense
 module_build:
@@ -266,7 +265,7 @@ module_build:
   stage: 'sanity'
   tags: ['docker']
   script:
-    - bundle exec puppet module build
+    - 'bundle exec puppet module build'
 
 # Linting
 #-----------------------------------------------------------------------
