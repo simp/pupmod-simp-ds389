@@ -93,7 +93,7 @@ jobs:
         - bundle exec rake pkg:compare_latest_tag
         - bundle exec rake pkg:create_tag_changelog
         - bundle exec rake lint
-        - bundle exec puppet module build
+        - bundle exec ruby -r 'pdk/module/build' -e 'PDK::Module::Build.new.build'
 
     - stage: spec
       name: 'Puppet 6.x (Latest)'
