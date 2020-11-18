@@ -1,0 +1,4 @@
+---
+ds389::install::package_list:
+  - 389-ds-base
+ds389::install::dnf_module: 389-ds
