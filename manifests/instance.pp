@@ -75,6 +75,8 @@ define ds389::instance (
     fail('You cannot end a 389DS instance with ".removed"')
   }
 
+  $_ds_remove_command = "/sbin/remove-ds.pl -f -i slapd-${title}"
+
   if $ensure == 'present' {
     unless $base_dn {
       fail('You must specify a base_dn')
@@ -120,7 +122,7 @@ define ds389::instance (
 
         file { $_bootstrap_ldif_file:
           owner   => 'root',
-          group   => 'root',
+          group   => $service_group,
           mode    => '0640',
           content => Sensitive($bootstrap_ldif_content),
           notify  => Exec["Setup ${title} DS"]
@@ -149,6 +151,26 @@ define ds389::instance (
       )
     }
 
+    if $facts['selinux_enforced'] {
+      simplib::assert_optional_dependency($module_name, 'simp/vox_selinux')
+
+      $_policycoreutils_pkg = simplib::lookup('vox_selinux::package_name')
+
+      ensure_packages([$_policycoreutils_pkg])
+
+      selinux_port { "tcp_${port}-${port}":
+        low_port  => $port,
+        high_port => $port,
+        seltype   => 'ldap_port_t',
+        protocol  => 'tcp',
+        require   => Package[$_policycoreutils_pkg],
+        before => [
+          Service["dirsrv@${title}"],
+          Exec["Setup ${title} DS"]
+        ]
+      }
+    }
+
     $_ds_config_file = "${config_dir}/${$_safe_path}_ds_setup.inf"
 
     file { $_ds_config_file:
@@ -165,6 +187,13 @@ define ds389::instance (
 
     if $enable_admin_service {
       $_setup_command = $ds389::install::admin_setup_command
+
+      # Newer versions don't have this file so we need to make a passthrough
+      file { $_setup_command:
+        target  => $ds389::install::setup_command,
+        replace => false,
+        before  => Exec["Setup ${title} DS"]
+      }
     }
     else {
       $_setup_command = $ds389::install::setup_command
@@ -180,8 +209,8 @@ define ds389::instance (
       {
         ensure => 'directory',
         owner  => 'root',
-        group  => 'root',
-        mode   => '0640'
+        group  => $service_group,
+        mode   => 'u+rwx,g+x,o-rwx'
       }
     )
 
@@ -226,7 +255,7 @@ define ds389::instance (
   }
   else {
     exec { "Remove 389DS instance ${title}":
-      command => "/sbin/remove-ds.pl -f -i slapd-${title}",
+      command => $_ds_remove_command,
       onlyif  => "/bin/test -d /etc/dirsrv/slapd-${title}"
     }
   }

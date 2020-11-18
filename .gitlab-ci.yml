@@ -300,25 +300,37 @@ pup6:
   <<: *pup_6
   <<: *acceptance_base
   script:
-    - 'bundle exec rake beaker:suites'
+    - 'bundle exec rake beaker:suites[default]'
+
+pup6-el8:
+  <<: *pup_6
+  <<: *acceptance_base
+  script:
+    - 'bundle exec rake beaker:suites[default,el8]'
 
 pup6-fips:
   <<: *pup_6
   <<: *acceptance_base
   script:
-    - 'BEAKER_fips=yes bundle exec rake beaker:suites'
+    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
+
+pup6-fips-el8:
+  <<: *pup_6
+  <<: *acceptance_base
+  script:
+    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default,el8]'
 
 pup6.18.0:
   <<: *pup_6_18_0
   <<: *acceptance_base
   script:
-    - 'bundle exec rake beaker:suites'
+    - 'bundle exec rake beaker:suites[default]'
 
 pup6.18.0-fips:
   <<: *pup_6_18_0
   <<: *acceptance_base
   script:
-    - 'BEAKER_fips=yes bundle exec rake beaker:suites'
+    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
 
 pup6.18.0-oel:
   <<: *pup_6_18_0

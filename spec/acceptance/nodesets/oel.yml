@@ -6,10 +6,9 @@
   end
 -%>
 HOSTS:
-  ca:
+  oel7:
     roles:
-      - ca
-      - server
+      - directory_server
       - default
     platform:   el-7-x86_64
     box:        onyxpoint/oel-7-x86_64

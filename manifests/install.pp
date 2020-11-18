@@ -13,20 +13,37 @@
 # @author https://github.com/simp/pupmod-simp-ds389/graphs/contributors
 #
 class ds389::install (
-  Boolean          $enable_admin_service = pick(getvar('ds389::enable_admin_service'), false),
-  Array[String]    $package_list        = ['389-ds-base'],
-  Array[String]    $admin_package_list  = ['389-admin', '389-admin-console', '389-ds-console'],
-  Stdlib::Unixpath $setup_command       = '/sbin/setup-ds.pl',
-  Stdlib::Unixpath $admin_setup_command = '/sbin/setup-ds-admin.pl'
+  Boolean                    $enable_admin_service = pick(getvar('ds389::enable_admin_service'), false),
+  Optional[Array[String[1]]] $package_list         = undef,
+  Optional[Array[String[1]]] $admin_package_list   = undef,
+  Optional[String[1]]        $dnf_module           = undef,
+  Optional[String[1]]        $dnf_stream           = undef,
+  Optional[String[1]]        $dnf_profile          = undef,
+  Stdlib::Unixpath           $setup_command        = '/sbin/setup-ds.pl',
+  Stdlib::Unixpath           $admin_setup_command  = '/sbin/setup-ds-admin.pl'
 ) {
   assert_private()
 
-  if $enable_admin_service {
-    $_389_packages = $admin_package_list
-  }
-  else {
-    $_389_packages = $package_list
+  unless $package_list or $dnf_module {
+    fail('You must specify either "$package_list" or "$dnf_module"')
   }
 
-  ensure_packages($_389_packages, { ensure => $ds389::package_ensure })
+  if $dnf_module and ( $facts['package_provider'] == 'dnf' ) {
+    package { $dnf_module:
+      ensure   => $dnf_stream,
+      flavor   => $dnf_profile,
+      provider => 'dnfmodule'
+    }
+  }
+
+  if $package_list and !empty($package_list) {
+    if $admin_package_list and $enable_admin_service {
+      $_389_packages = $admin_package_list
+    }
+    else {
+      $_389_packages = $package_list
+    }
+
+    ensure_packages($_389_packages, { ensure => $ds389::package_ensure })
+  }
 }

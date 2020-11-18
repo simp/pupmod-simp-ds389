@@ -1,4 +1,13 @@
 ---
+lookup_options:
+  ds389::install::package_list:
+    merge:
+      strategy: deep
+      knockout_prefix: --
+  ds389::install::admin_package_list:
+    merge:
+      strategy: deep
+      knockout_prefix: --
 ds389::config::attributes_requiring_restart:
   - nsslapd-changelogdir
   - nsslapd-changelogmaxage
