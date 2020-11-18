@@ -133,8 +133,8 @@ describe 'ds389::instance', type: :define do
             expect(subject).to create_file('/usr/share/puppet_ds389_config')
               .with_ensure('directory')
               .with_owner('root')
-              .with_group('root')
-              .with_mode('0640')
+              .with_group('nobody')
+              .with_mode('u+rwx,g+x,o-rwx')
           }
 
           it {
