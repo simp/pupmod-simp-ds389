@@ -9,5 +9,6 @@ fixtures:
     vox_selinux:
       repo: https://github.com/simp/pupmod-voxpupuli-selinux
       branch: simp-master
+    selinux: https://github.com/simp/pupmod-simp-selinux
   symlinks:
     ds389: "#{source_dir}"

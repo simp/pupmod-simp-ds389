@@ -152,18 +152,16 @@ define ds389::instance (
     }
 
     if $facts['selinux_enforced'] {
+      simplib::assert_optional_dependency($module_name, 'simp/selinux')
       simplib::assert_optional_dependency($module_name, 'simp/vox_selinux')
 
-      $_policycoreutils_pkg = simplib::lookup('vox_selinux::package_name')
-
-      ensure_packages([$_policycoreutils_pkg])
+      include selinux::install
 
       selinux_port { "tcp_${port}-${port}":
         low_port  => $port,
         high_port => $port,
         seltype   => 'ldap_port_t',
         protocol  => 'tcp',
-        require   => Package[$_policycoreutils_pkg],
         before => [
           Service["dirsrv@${title}"],
           Exec["Setup ${title} DS"]
