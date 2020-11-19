@@ -151,7 +151,7 @@ define ds389::instance (
       )
     }
 
-    if $facts['selinux_enforced'] {
+    if ($port != 389) and $facts['selinux_enforced'] {
       simplib::assert_optional_dependency($module_name, 'simp/selinux')
       simplib::assert_optional_dependency($module_name, 'simp/vox_selinux')
 
