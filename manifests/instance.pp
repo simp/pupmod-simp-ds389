@@ -152,10 +152,22 @@ define ds389::instance (
     }
 
     if ($port != 389) and $facts['selinux_enforced'] {
-      simplib::assert_optional_dependency($module_name, 'simp/selinux')
-      simplib::assert_optional_dependency($module_name, 'simp/vox_selinux')
+      # This is a basic pattern for ensuring that the SELinux requirements are
+      # met for the providers.
+      #
+      # If you aren't using the SIMP SELinux stack then there
+      # currently is no way to ensure that the necessary packages are installed
+      # in the correct order so users should `require 'selinux'` early in their
+      # stack.
+      if simplib::module_exist('simp/selinux') {
+        simplib::assert_optional_dependency($module_name, 'simp/selinux')
+        simplib::assert_optional_dependency($module_name, 'simp/vox_selinux')
 
-      include selinux::install
+        include selinux::install
+      }
+      else {
+        simplib::assert_optional_dependency($module_name, 'puppet/selinux')
+      }
 
       selinux_port { "tcp_${port}-${port}":
         low_port  => $port,
