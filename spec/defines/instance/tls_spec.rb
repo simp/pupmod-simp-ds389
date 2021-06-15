@@ -267,6 +267,66 @@ describe 'ds389::instance::tls', type: :define do
             it { is_expected.to create_ds389__instance__attr__set("Do not require encryption for #{title}") }
           end
         end
+
+        context 'with conflicting ports' do
+          let(:params) do
+            {
+              ensure: 'simp',
+              root_dn: 'dn=thing',
+              root_pw_file: '/some/seekrit/file.skrt',
+              key: '/my/key',
+              cert: '/my/cert',
+              cafile: '/my/cafile',
+              token: '12345678910111213' # For testing
+            }
+          end
+
+          context 'non-secure port conflicts with TLS port' do
+            let(:facts) do
+              os_facts.merge(
+                {
+                  selinux_enforced: true,
+                  ds389__instances: {
+                    'conflicting_port' => {
+                    'port'       => 636,
+                    },
+                    title => {
+                      'port'       => 389,
+                      'securePort' => 636
+                    }
+                  }
+                }
+              )
+            end
+
+            it {
+              is_expected.to compile.and_raise_error(%r{port '636' is already in use})
+            }
+          end
+
+          context 'TLS port conflicts with TLS port' do
+            let(:facts) do
+              os_facts.merge(
+                {
+                  selinux_enforced: true,
+                  ds389__instances: {
+                    'conflicting_secure_port' => {
+                    'securePort'       => 636,
+                    },
+                    title => {
+                      'port'       => 389,
+                      'securePort' => 636
+                    }
+                  }
+                }
+              )
+            end
+
+            it {
+              is_expected.to compile.and_raise_error(%r{port '636' is already in use})
+            }
+          end
+        end
       end
     end
   end

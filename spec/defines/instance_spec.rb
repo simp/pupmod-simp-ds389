@@ -245,13 +245,74 @@ describe 'ds389::instance', type: :define do
               }
             end
 
-            it { is_expected.to compile.with_all_deps }
+            context 'when instance is in ds389__instances fact and ports match' do
+              let(:facts) do
+                os_facts.merge(
+                  {
+                    ds389__instances: {
+                      title => {
+                        'port'       => 389,
+                        'securePort' => 636
+                      },
+                      'foo' => {
+                        'port'       => 333,
+                        'securePort' => 635
+                      }
+                    }
+                  },
+                )
+              end
 
-            it {
-              expect(subject).to create_exec("Remove 389DS instance #{title}")
-                .with_command("/sbin/remove-ds.pl -f -i slapd-#{title}")
-                .with_onlyif("/bin/test -d /etc/dirsrv/slapd-#{title}")
-            }
+              it { is_expected.to compile.with_all_deps }
+              it {
+                is_expected.to create_exec("Remove 389DS instance #{title}")
+                  .with_command("/sbin/remove-ds.pl -f -i slapd-#{title}")
+                  .with_onlyif("/bin/test -d /etc/dirsrv/slapd-#{title}")
+              }
+
+              it {
+                is_expected.to create_ds389__instance__selinux__port('389')
+                  .with_enable(false)
+                  .with_default(389)
+              }
+
+              it {
+                is_expected.to create_ds389__instance__selinux__port('636')
+                  .with_enable(false)
+                  .with_default(636)
+              }
+            end
+
+            context 'when instance is in ds389__instances fact and ports do not match' do
+              let(:facts) do
+                os_facts.merge(
+                  {
+                    ds389__instances: {
+                      title => {
+                        'port'       => 388,
+                        'securePort' => 634
+                      },
+                      'foo' => {
+                        'port'       => 333,
+                        'securePort' => 635
+                      }
+                    }
+                  },
+                )
+              end
+
+              it { is_expected.to compile.with_all_deps }
+              it { is_expected.to create_exec("Remove 389DS instance #{title}") }
+              it { is_expected.to_not create_ds389__instance__selinux__port('389') }
+              it { is_expected.to_not create_ds389__instance__selinux__port('636') }
+            end
+
+            context 'when instance is not in ds389__instances fact' do
+              it { is_expected.to compile.with_all_deps }
+              it { is_expected.to create_exec("Remove 389DS instance #{title}") }
+              it { is_expected.to_not create_ds389__instance__selinux__port('389') }
+              it { is_expected.to_not create_ds389__instance__selinux__port('636') }
+            end
           end
 
           context 'with a conflicting resource port' do
@@ -265,7 +326,7 @@ describe 'ds389::instance', type: :define do
             end
 
             it {
-              expect { expect(subject).to compile.with_all_deps }.to raise_error(%r{is already selected for use})
+              is_expected.to compile.and_raise_error(%r{is already selected for use})
             }
           end
 
@@ -290,7 +351,7 @@ describe 'ds389::instance', type: :define do
             end
 
             it {
-              expect { expect(subject).to compile.with_all_deps }.to raise_error(%r{port '636' is already selected for use})
+              is_expected.to compile.and_raise_error(%r{port '636' is already selected for use})
             }
           end
 
@@ -326,6 +387,7 @@ describe 'ds389::instance', type: :define do
                         'port' => 1234
                       },
                       title => {
+                        # code only cares about title
                         'port' => 234
                       },
                       'foo' => {
@@ -337,7 +399,30 @@ describe 'ds389::instance', type: :define do
               end
 
               it {
-                expect { expect(subject).to compile.with_all_deps }.to raise_error(%r{port '389' is already in use})
+                is_expected.to compile.and_raise_error(%r{port '389' is already in use})
+              }
+            end
+
+            context 'when non-secure port conflicts with with TLS port' do
+              let(:facts) do
+                os_facts.merge(
+                  {
+                    ds389__instances: {
+                      title => {
+                        # code only cares about title
+                        'port' => 234
+                      },
+                      'foo' => {
+                        'port'       => 388,
+                        'securePort' => 389
+                      }
+                    }
+                  },
+                )
+              end
+
+              it {
+                is_expected.to compile.and_raise_error(%r{port '389' is already in use})
               }
             end
 
@@ -362,6 +447,7 @@ describe 'ds389::instance', type: :define do
                         'securePort' => 636
                       },
                       'foo' => {
+                        # neither port conflicts
                         'port'       => 333,
                         'securePort' => 635
                       }
@@ -373,7 +459,7 @@ describe 'ds389::instance', type: :define do
               it { is_expected.to compile.with_all_deps }
             end
 
-            context 'when conflicting with TLS' do
+            context 'when conflicting secure port with TLS' do
               let(:params) do
                 {
                   'base_dn'    => 'ou=root,dn=my,dn=domain',
@@ -402,7 +488,7 @@ describe 'ds389::instance', type: :define do
               end
 
               it {
-                expect { expect(subject).to compile.with_all_deps }.to raise_error(%r{port '636' is already in use})
+                is_expected.to compile.and_raise_error(%r{port '636' is already in use})
               }
             end
           end

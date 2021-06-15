@@ -269,16 +269,26 @@ define ds389::instance (
       onlyif  => "/bin/test -d /etc/dirsrv/slapd-${title}"
     }
 
-    ensure_resource('ds389::instance::selinux::port', String($port), {
-        enable  => false,
-        default => 389
-      }
-    )
+    pick($facts['ds389__instances'], {}).each |$daemon, $data| {
+      if ($daemon == $title) {
+        # It is only safe to remove the selinux ports if you know they are
+        # in use for the 389ds instance
+        if ( $data['port'] == $port) {
+          ensure_resource('ds389::instance::selinux::port', String($port), {
+              enable  => false,
+              default => 389
+            }
+          )
+        }
 
-    ensure_resource('ds389::instance::selinux::port', String($secure_port), {
-        enable  => false,
-        default => 636
+        if ( $data['securePort'] == $secure_port) {
+          ensure_resource('ds389::instance::selinux::port', String($secure_port), {
+              enable  => false,
+              default => 636
+            }
+          )
+        }
       }
-    )
+    }
   }
 }
