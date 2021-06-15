@@ -94,7 +94,7 @@ define ds389::instance::tls (
 
     # Check to make sure we're not going to have a conflict with something that's running
     pick($facts['ds389__instances'], {}).each |$daemon, $data| {
-     unless $daemon == $title {
+      unless $daemon == $title {
         if ($data['port'] == $port) or ($data['securePort'] == $port) {
           fail("The port '${port}' is already in use by '${daemon}'")
         }
