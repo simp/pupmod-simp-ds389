@@ -41,13 +41,14 @@
 #
 # @param enable_tls
 #   This will enable TLS and affect how the pki certs are configured.
-#   'simp' =>  enables TLS and copies the certs from the puppetserver
-#              using the SIMP pki module.
-#   'true' =>  enables TLS and copies the certs from a location on the
-#              local system. See pki module to see the required
-#              configuration of the directory.
-#   'false'   => Do nothing with the TLS settings.
-#   'disable' => Disable TLS on the instance.
+#   'simp'     => enables TLS and copies the certs from the puppetserver
+#                 using the SIMP pki module.
+#   'true'     => enables TLS and copies the certs from a location on the
+#                 local system. See pki module to see the required
+#                 configuration of the directory.
+#   'false'    => Do nothing with the TLS settings.
+#   'disabled' => Disable TLS on the instance.
+#
 # @param tls_params
 #   Parameters to pass to the TLS module:
 #
@@ -108,7 +109,7 @@ define ds389::instance (
     # Check to make sure we're not going to have a conflict with something that's running
     pick($facts['ds389__instances'], {}).each |$daemon, $data| {
       unless $daemon == $title {
-        if $data['port'] == $port {
+        if ($data['port'] == $port) or ($data['securePort'] == $port) {
           fail("The port '${port}' is already in use by '${daemon}'")
         }
       }
@@ -268,16 +269,26 @@ define ds389::instance (
       onlyif  => "/bin/test -d /etc/dirsrv/slapd-${title}"
     }
 
-    ensure_resource('ds389::instance::selinux::port', String($port), {
-        enable  => false,
-        default => 389
-      }
-    )
+    pick($facts['ds389__instances'], {}).each |$daemon, $data| {
+      if ($daemon == $title) {
+        # It is only safe to remove the selinux ports if you know they are
+        # in use for the 389ds instance
+        if ( $data['port'] == $port) {
+          ensure_resource('ds389::instance::selinux::port', String($port), {
+              enable  => false,
+              default => 389
+            }
+          )
+        }
 
-    ensure_resource('ds389::instance::selinux::port', String($secure_port), {
-        enable  => false,
-        default => 636
+        if ( $data['securePort'] == $secure_port) {
+          ensure_resource('ds389::instance::selinux::port', String($secure_port), {
+              enable  => false,
+              default => 636
+            }
+          )
+        }
       }
-    )
+    }
   }
 }

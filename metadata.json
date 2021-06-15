@@ -5,6 +5,8 @@
   "summary": "Management of 389 Directory Server",
   "license": "Apache-2.0",
   "source": "https://github.com/simp/pupmod-simp-ds389",
+  "project_page": "https://github.com/simp/pupmod-simp-ds389",
+  "issues_url": "https://simp-project.atlassian.net",
   "dependencies": [
     {
       "name": "simp/simplib",
@@ -12,7 +14,7 @@
     },
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 6.4.0 < 7.0.0"
+      "version_requirement": ">= 6.4.0 < 8.0.0"
     }
   ],
   "simp": {

@@ -38,6 +38,12 @@
 #
 #   * Defaults to `$ds389::config_dir/<usual pw file>`
 #
+# @param host
+#   The host to which to connect
+#
+#   * Has no effect if LDAPI is enabled on the instance
+#   * Will use 127.0.01 if not set
+#
 # @param port
 #   The port to which to connect
 #

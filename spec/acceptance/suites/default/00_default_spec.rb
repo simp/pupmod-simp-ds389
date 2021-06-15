@@ -89,9 +89,26 @@ describe 'Set up 389DS' do
       it 'fails when logging in with forced encryption' do
         expect { on(host, %(ldapsearch -ZZ -x -w "#{rootpasswd}" -D "#{root_dn}" -h `hostname -f` -b "cn=tasks,cn=config")) }.to raise_error(Beaker::Host::CommandFailure)
       end
+
+      it 'reports 389ds instance facts for single instance' do
+        results = pfact_on(host, 'ds389__instances')
+        puts "Fact ds389__instances = #{results}"
+        expect( results.to_s ).to_not be_empty
+        expect( results.keys).to eq ['test_in']
+
+        # check the details in the facts
+        details = results['test_in']
+        expect( details['ldapifilepath'] ).to eq('/var/run/slapd-test_in.socket')
+        expect( details['ldapilisten'] ).to be true
+        expect( details['listenhost'] ).to eq('127.0.0.1')
+        expect( details['port'] ).to eq(389)
+        expect( details.key?('require-secure-binds') ).to be false
+        expect( details['rootdn'] ).to eq('cn=Directory_Manager')
+        expect( details.key?('securePort') ).to be false
+      end
     end
 
-    context 'with an instance to delete' do
+    context 'create an instance on a custom port' do
       # Let passgen auto generate the password and get the password from the file.
       let(:root_dn_password_file) do
         "/usr/share/puppet_ds389_config/#{ds_root_name}_ds_pw.txt"
@@ -125,9 +142,35 @@ describe 'Set up 389DS' do
         on(host, %(ldapsearch -x -y "#{root_dn_password_file}" -D "#{hieradata['ds389::instances'][ds_root_name]['root_dn']}" -H ldapi://%2fvar%2frun%2fslapd-#{ds_root_name}.socket -b "cn=tasks,cn=config"))
         # rubocop:enable Layout/LineLength
       end
+
+      it 'reports 389ds instance facts for both instances' do
+        results = pfact_on(host, 'ds389__instances')
+        puts "Fact ds389__instances = #{results}"
+        expect( results.to_s ).to_not be_empty
+        expect( results.keys.sort ).to eq ['scrap', 'test_in']
+
+        # check the details in the facts
+        test_in_details = results['test_in']
+        expect( test_in_details['ldapifilepath'] ).to eq('/var/run/slapd-test_in.socket')
+        expect( test_in_details['ldapilisten'] ).to be true
+        expect( test_in_details['listenhost'] ).to eq('127.0.0.1')
+        expect( test_in_details['port'] ).to eq(389)
+        expect( test_in_details.key?('require-secure-binds') ).to be false
+        expect( test_in_details['rootdn'] ).to eq('cn=Directory_Manager')
+        expect( test_in_details.key?('securePort') ).to be false
+
+        scrap_details = results['scrap']
+        expect( scrap_details['ldapifilepath'] ).to eq('/var/run/slapd-scrap.socket')
+        expect( scrap_details['ldapilisten'] ).to be true
+        expect( scrap_details['listenhost'] ).to eq('0.0.0.0')
+        expect( scrap_details['port'] ).to eq(388)
+        expect( scrap_details.key?('require-secure-binds') ).to be false
+        expect( scrap_details['rootdn'] ).to eq('cn=Scrap_Admin')
+        expect( scrap_details.key?('securePort') ).to be false
+      end
     end
 
-    context 'when removing a server instance' do
+    context 'when removing server instances' do
       let(:manifest) do
         <<~MANIFEST
           ds389::instance { "scrap": ensure => "absent" }
@@ -142,7 +185,7 @@ describe 'Set up 389DS' do
         set_hieradata_on(host, hieradata)
       end
 
-      it 'removes the server instance' do
+      it 'removes the server instances' do
         expect(directory_exists_on(host, '/etc/dirsrv/slapd-scrap')).to be true
         expect(directory_exists_on(host, '/etc/dirsrv/slapd-test_in')).to be true
 
@@ -154,6 +197,12 @@ describe 'Set up 389DS' do
 
       it 'is idempotent' do
         apply_manifest_on(host, manifest, catch_changes: true)
+      end
+
+      it 'reports no 389ds instance facts' do
+        results = pfact_on(host, 'ds389__instances')
+        puts "Fact ds389__instances = #{results}"
+        expect( results ).to be_empty
       end
     end
   end

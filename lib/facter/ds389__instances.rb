@@ -11,10 +11,20 @@
 #       'port' => 9830
 #     },
 #     'slapd-puppet_default_root' => {
-#       'port' => 389
+#       'ldapifilepath'        => "/var/run/slapd-puppet_default_root.socket",
+#       'ldapilisten'          => true,
+#       'listenhost'           => '0.0.0.0',
+#       'port'                 => 389,
+#       'require-secure-binds' => true,
+#       'rootdn'               => 'cn=Directory_Manager',
+#       'securePort'           => 636
 #     },
 #     'slapd-test_instance' => {
-#       'port' => 390
+#       'ldapifilepath'        => "/var/run/slapd-test_instance.socket",
+#       'ldapilisten'          => true,
+#       'listenhost'           => '0.0.0.0',
+#       'port'                 => 390,
+#       'rootdn'               => 'cn=Directory_Manager'
 #     }
 #   }
 #
@@ -31,6 +41,7 @@ Facter.add('ds389__instances') do
       'nsslapd-port',
       'nsslapd-require-secure-binds',
       'nsslapd-rootdn',
+      'nsslapd-securePort',
     ]
 
     instances = {}
@@ -110,6 +121,10 @@ Facter.add('ds389__instances') do
         # Fixup troublesome items
         if instances[instance_name]['ldapilisten']
           instances[instance_name]['ldapilisten'] = File.exist?((instances[instance_name]['ldapifilepath']).to_s)
+        end
+
+        if instances[instance_name]['require-secure-binds'] && !instances[instance_name].key?('securePort')
+          instances[instance_name]['securePort'] = 636
         end
       end
     end

@@ -11,12 +11,17 @@
 
 ### Defined types
 
+#### Public Defined types
+
 * [`ds389::instance`](#ds389instance)
 * [`ds389::instance::attr::set`](#ds389instanceattrset): Modifies the running directory server configuration and restarts the service when necessary.  NOTE: When calling this defined type as you fir
 * [`ds389::instance::dn::add`](#ds389instancednadd): Creates the passed DN using the provided paramters  NOTE: When calling this defined type as you first set up an instance, you will need to pa
 * [`ds389::instance::selinux::port`](#ds389instanceselinuxport): Consolidate selinux_port enable/disable logic
 * [`ds389::instance::service`](#ds389instanceservice): Configure an instance service
-* [`ds389::instance::tls`](#ds389instancetls): Configure TLS for an instance
+
+#### Private Defined types
+
+* `ds389::instance::tls`: Configure TLS for an instance
 
 ### Data types
 
@@ -92,6 +97,7 @@ The following parameters are available in the `ds389::install` class:
 * [`setup_command`](#setup_command)
 * [`dnf_module`](#dnf_module)
 * [`dnf_stream`](#dnf_stream)
+* [`dnf_enable_only`](#dnf_enable_only)
 * [`dnf_profile`](#dnf_profile)
 * [`remove_command`](#remove_command)
 
@@ -128,9 +134,17 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
+##### <a name="dnf_enable_only"></a>`dnf_enable_only`
+
+Data type: `Boolean`
+
+
+
+Default value: ``false``
+
 ##### <a name="dnf_profile"></a>`dnf_profile`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[String]`
 
 
 
@@ -314,15 +328,15 @@ The following parameters are available in the `ds389::instance::attr::set` defin
 
 * [`key`](#key)
 * [`value`](#value)
+* [`attrs`](#attrs)
 * [`base_dn`](#base_dn)
 * [`instance_name`](#instance_name)
 * [`root_dn`](#root_dn)
 * [`root_pw_file`](#root_pw_file)
+* [`host`](#host)
 * [`port`](#port)
 * [`force_ldapi`](#force_ldapi)
 * [`restart_instance`](#restart_instance)
-* [`attrs`](#attrs)
-* [`host`](#host)
 
 ##### <a name="key"></a>`key`
 
@@ -334,6 +348,8 @@ The configuration key to be set
     ``ldapsearch -H ldap://localhost:389 \
     -y /usr/share/puppet_ds389_config/<instance_name>_ds_pw.txt \
     -D "cn=Directory_Manager" -s base -b "cn=config"``
+  * Mutually exclusive with `$attrs`
+  * `$value` must be set when using this parameter.
 
 Default value: ``undef``
 
@@ -344,6 +360,20 @@ Data type: `Optional[String[1]]`
 The value that should be set for `$key`
 
 Default value: ``undef``
+
+##### <a name="attrs"></a>`attrs`
+
+Data type: `Ds389::ConfigItems`
+
+Hash of attributes to be set.
+
+  * You can get a list of all configuration keys by running:
+    ``ldapsearch -H ldap://localhost:389 \
+    -y /usr/share/puppet_ds389_config/<instance_name>_ds_pw.txt \
+    -D "cn=Directory_Manager" -s base -b "cn=config"``
+  * Mutually exclusive with `$key`
+
+Default value: `{}`
 
 ##### <a name="base_dn"></a>`base_dn`
 
@@ -379,6 +409,17 @@ A file containing the password for use with ``$root_dn``
 
 Default value: ``undef``
 
+##### <a name="host"></a>`host`
+
+Data type: `Optional[Simplib::Host]`
+
+The host to which to connect
+
+* Has no effect if LDAPI is enabled on the instance
+* Will use 127.0.01 if not set
+
+Default value: ``undef``
+
 ##### <a name="port"></a>`port`
 
 Data type: `Optional[Simplib::Port]`
@@ -410,22 +451,6 @@ Whether or not to restart the directory server after applying this item
 
 Default value: ``false``
 
-##### <a name="attrs"></a>`attrs`
-
-Data type: `Ds389::ConfigItems`
-
-
-
-Default value: `{}`
-
-##### <a name="host"></a>`host`
-
-Data type: `Optional[Simplib::Host]`
-
-
-
-Default value: ``undef``
-
 ### <a name="ds389instancednadd"></a>`ds389::instance::dn::add`
 
 Creates the passed DN using the provided paramters
@@ -447,10 +472,10 @@ The following parameters are available in the `ds389::instance::dn::add` defined
 * [`content`](#content)
 * [`root_dn`](#root_dn)
 * [`root_pw_file`](#root_pw_file)
+* [`host`](#host)
 * [`port`](#port)
 * [`force_ldapi`](#force_ldapi)
 * [`restart_instance`](#restart_instance)
-* [`host`](#host)
 
 ##### <a name="instance_name"></a>`instance_name`
 
@@ -514,6 +539,17 @@ A file containing the password for use with ``$root_dn``
 
 Default value: ``undef``
 
+##### <a name="host"></a>`host`
+
+Data type: `Optional[Simplib::Host]`
+
+The host to which to connect
+
+* Has no effect if LDAPI is enabled on the instance
+* Will use 127.0.01 if not set
+
+Default value: ``undef``
+
 ##### <a name="port"></a>`port`
 
 Data type: `Optional[Simplib::Port]`
@@ -542,14 +578,6 @@ Data type: `Boolean`
 Whether or not to restart the directory server after applying this item
 
 Default value: ``false``
-
-##### <a name="host"></a>`host`
-
-Data type: `Optional[Simplib::Host]`
-
-
-
-Default value: ``undef``
 
 ### <a name="ds389instanceselinuxport"></a>`ds389::instance::selinux::port`
 
@@ -620,110 +648,6 @@ Data type: `Boolean`
 
 
 Default value: `simplib::dlookup('ds389::instance::service', 'hasrestart', $name, { 'default_value' => true})`
-
-### <a name="ds389instancetls"></a>`ds389::instance::tls`
-
-Requires LDAPI to be enabled
-
-#### Parameters
-
-The following parameters are available in the `ds389::instance::tls` defined type:
-
-* [`root_dn`](#root_dn)
-* [`root_pw_file`](#root_pw_file)
-* [`ensure`](#ensure)
-* [`port`](#port)
-* [`source`](#source)
-* [`cert`](#cert)
-* [`key`](#key)
-* [`cafile`](#cafile)
-* [`dse_config`](#dse_config)
-* [`token`](#token)
-* [`service_group`](#service_group)
-
-##### <a name="root_dn"></a>`root_dn`
-
-Data type: `String[2]`
-
-
-
-##### <a name="root_pw_file"></a>`root_pw_file`
-
-Data type: `Stdlib::Absolutepath`
-
-
-
-##### <a name="ensure"></a>`ensure`
-
-Data type: `Variant[Boolean, Enum['disabled','simp']]`
-
-
-
-Default value: `simplib::lookup('simp_options::pki', { 'default_value' => false})`
-
-##### <a name="port"></a>`port`
-
-Data type: `Simplib::Port`
-
-
-
-Default value: `636`
-
-##### <a name="source"></a>`source`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: `simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' })`
-
-##### <a name="cert"></a>`cert`
-
-Data type: `Stdlib::Absolutepath`
-
-
-
-Default value: `"/etc/pki/simp_apps/${module_name}_${title}/x509/public/${facts['fqdn']}.pub"`
-
-##### <a name="key"></a>`key`
-
-Data type: `Stdlib::Absolutepath`
-
-
-
-Default value: `"/etc/pki/simp_apps/${module_name}_${title}/x509/private/${facts['fqdn']}.pem"`
-
-##### <a name="cafile"></a>`cafile`
-
-Data type: `Stdlib::Absolutepath`
-
-
-
-Default value: `"/etc/pki/simp_apps/${module_name}_${title}/x509/cacerts/cacerts.pem"`
-
-##### <a name="dse_config"></a>`dse_config`
-
-Data type: `Ds389::ConfigItems`
-
-
-
-Default value: `simplib::dlookup('ds389::instance::tls', 'dse_config', { 'default_value' => {} })`
-
-##### <a name="token"></a>`token`
-
-Data type: `String[16]`
-
-
-
-Default value: `simplib::passgen("ds389_${title}_pki", { 'length' => 32 })`
-
-##### <a name="service_group"></a>`service_group`
-
-Data type: `String[1]`
-
-
-
-Default value: `'dirsrv'`
 
 ## Data types
 

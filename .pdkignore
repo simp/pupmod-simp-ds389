@@ -1,5 +1,15 @@
+# .pdkignore masks files from inclusion by `pdk build`.
+#
+# It is used by CI when building modules to publish to the Puppet Forge and to
+# mask symlinks from the `pdk build` test in the module's RELENG checks.
+# ------------------------------------------------------------------------------
+#         NOTICE: **This file is maintained with puppetsync**
+#
+# This file is automatically updated as part of a puppet module baseline.
+# The next baseline sync will overwrite any local changes made to this file.
+# ------------------------------------------------------------------------------
+.*.sw?
 .git/
-.*.sw[op]
 .metadata
 .yardoc
 .yardwarns
@@ -15,10 +25,10 @@
 /junit/
 /log/
 /pkg/
-/spec/fixtures/manifests/
-/spec/fixtures/modules/
+/dist/
 /tmp/
 /vendor/
+/.vendor/
 /convert_report.txt
 /update_report.txt
 .DS_Store
@@ -30,8 +40,12 @@
 /Gemfile
 /.gitattributes
 /.gitignore
+/.github/
 /.gitlab-ci.yml
 /.pdkignore
+/.puppet-lint.rc
+/.sync.yml
+/.pmtignore
 /Rakefile
 /rakelib/
 /.rspec
@@ -40,3 +54,4 @@
 /.yardopts
 /spec/
 /.vscode/
+/tests/

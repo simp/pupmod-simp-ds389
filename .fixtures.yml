@@ -3,21 +3,24 @@
 ---
 fixtures:
   repositories:
-    compliance_markup: https://github.com/simp/pupmod-simp-compliance_markup
-    pki: https://github.com/simp/pupmod-simp-pki
-    simplib: https://github.com/simp/pupmod-simp-simplib
-    stdlib: https://github.com/simp/puppetlabs-stdlib
+    augeas_core:
+      repo: https://github.com/simp/pupmod-puppetlabs-augeas_core.git
+      puppet_version: ">= 6.0.0"
+    compliance_markup: https://github.com/simp/pupmod-simp-compliance_markup.git
+    pki: https://github.com/simp/pupmod-simp-pki.git
+    simplib: https://github.com/simp/pupmod-simp-simplib.git
+    stdlib: https://github.com/simp/puppetlabs-stdlib.git
     vox_selinux:
-      repo: https://github.com/simp/pupmod-voxpupuli-selinux
+      repo: https://github.com/simp/pupmod-voxpupuli-selinux.git
       branch: simp-master
-    selinux: https://github.com/simp/pupmod-simp-selinux
+    selinux: https://github.com/simp/pupmod-simp-selinux.git
 
 # Testing
-    auditd: https://github.com/simp/pupmod-simp-auditd
-    augeasproviders_core: https://github.com/simp/augeasproviders_core
-    augeasproviders_grub: https://github.com/simp/augeasproviders_grub
-    concat: https://github.com/simp/puppetlabs-concat
-    augeasproviders_ssh: https://github.com/simp/augeasproviders_ssh
-    ssh: https://github.com/simp/pupmod-simp-ssh
+    auditd: https://github.com/simp/pupmod-simp-auditd.git
+    augeasproviders_core: https://github.com/simp/augeasproviders_core.git
+    augeasproviders_grub: https://github.com/simp/augeasproviders_grub.git
+    concat: https://github.com/simp/puppetlabs-concat.git
+    augeasproviders_ssh: https://github.com/simp/augeasproviders_ssh.git
+    ssh: https://github.com/simp/pupmod-simp-ssh.git
   symlinks:
     ds389: "#{source_dir}"

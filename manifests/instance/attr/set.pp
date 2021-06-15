@@ -15,9 +15,20 @@
 #       ``ldapsearch -H ldap://localhost:389 \
 #       -y /usr/share/puppet_ds389_config/<instance_name>_ds_pw.txt \
 #       -D "cn=Directory_Manager" -s base -b "cn=config"``
+#     * Mutually exclusive with `$attrs`
+#     * `$value` must be set when using this parameter.
 #
 # @param value
 #   The value that should be set for `$key`
+#
+# @param attrs
+#   Hash of attributes to be set.
+#
+#     * You can get a list of all configuration keys by running:
+#       ``ldapsearch -H ldap://localhost:389 \
+#       -y /usr/share/puppet_ds389_config/<instance_name>_ds_pw.txt \
+#       -D "cn=Directory_Manager" -s base -b "cn=config"``
+#     * Mutually exclusive with `$key`
 #
 # @param base_dn
 #   The base DN under which to search
@@ -34,6 +45,12 @@
 #   A file containing the password for use with ``$root_dn``
 #
 #   * Defaults to `$ds389::config_dir/<usual pw file>`
+#
+# @param host
+#   The host to which to connect
+#
+#   * Has no effect if LDAPI is enabled on the instance
+#   * Will use 127.0.01 if not set
 #
 # @param port
 #   The port to which to connect
