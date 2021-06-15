@@ -14,12 +14,20 @@ describe 'ds389::instance::tls', type: :define do
           'test'
         end
 
-        let(:params) do
-          {
-            root_dn: 'dn=thing',
-            root_pw_file: '/some/seekrit/file.skrt',
-            token: '12345678910111213' # For testing
-          }
+        let(:instance_base) do
+            "/etc/dirsrv/slapd-#{title}"
+        end
+
+        let(:p12file) do
+          "#{instance_base}/puppet_import.p12"
+        end
+
+        let(:pin_file) do
+          "#{instance_base}/pin.txt"
+        end
+
+        let(:token_file) do
+          "#{instance_base}/p12token.txt"
         end
 
         let(:pre_condition) do
@@ -30,22 +38,28 @@ describe 'ds389::instance::tls', type: :define do
           PRECOND
         end
 
-        it { is_expected.to compile.with_all_deps }
+        context 'with default parameters' do
+          let(:params) do
+            {
+              root_dn: 'dn=thing',
+              root_pw_file: '/some/seekrit/file.skrt',
+              token: '12345678910111213' # For testing
+            }
+          end
 
-        it do
-          expect(subject).to create_file("/etc/dirsrv/slapd-#{title}/pin.txt")
-            .with_group('dirsrv')
-            .with_mode('0600')
-            .with_content(sensitive("Internal (Software) Token:#{params[:token]}\n"))
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to_not create_ds389__instance__selinux__port('636') }
+          it { is_expected.to_not create_ds389__instance__attr__set("Do not require encryption for #{title}") }
+          it { is_expected.to_not create_file(pin_file) }
+          it { is_expected.to_not create_file(token_file) }
+          it { is_expected.to_not create_pki__copy("ds389_#{title}") }
+          it { is_expected.to_not create_exec("Validate #{title} p12") }
+          it { is_expected.to_not create_exec("Build #{title} p12") }
+          it { is_expected.to_not create_exec("Import #{title} p12") }
+          it { is_expected.to_not create_exec("Import #{title} CA") }
+          it { is_expected.to_not create_ds389__instance__dn__add("RSA DN for #{title}") }
+          it { is_expected.to_not create_ds389__instance__attr__set("Configure PKI for #{title}") }
         end
-
-        it do
-          expect(subject).to create_file("/etc/dirsrv/slapd-#{title}/p12token.txt")
-            .with_mode('0400')
-            .with_content(sensitive(params[:token]))
-        end
-
-        it { is_expected.not_to create_pki__copy("ds389_#{title}") }
 
         context 'with SIMP PKI' do
           let(:params) do
@@ -60,18 +74,28 @@ describe 'ds389::instance::tls', type: :define do
             }
           end
 
-          let(:instance_base) do
-            "/etc/dirsrv/slapd-#{title}"
-          end
-          let(:p12file) do
-            "#{instance_base}/puppet_import.p12"
-          end
-
-          let(:token_file) do
-            "#{instance_base}/p12token.txt"
-          end
-
           it { is_expected.to compile.with_all_deps }
+
+          it do
+            is_expected.to create_ds389__instance__selinux__port('636')
+              .with_enable(true)
+              .with_default(636)
+          end
+
+          it { is_expected.to_not create_ds389__instance__attr__set("Do not require encryption for #{title}") }
+
+          it do
+            is_expected.to create_file(pin_file)
+            .with_group('dirsrv')
+            .with_mode('0600')
+            .with_content(sensitive("Internal (Software) Token:#{params[:token]}\n"))
+          end
+
+          it do
+            is_expected.to create_file(token_file)
+              .with_mode('0400')
+              .with_content(sensitive(params[:token]))
+          end
 
           it do
             expect(subject).to create_pki__copy("ds389_#{title}")
@@ -150,6 +174,40 @@ describe 'ds389::instance::tls', type: :define do
           end
         end
 
+        context 'with non-SIMP PKI' do
+          let(:params) do
+            {
+              ensure: true,
+              root_dn: 'dn=thing',
+              root_pw_file: '/some/seekrit/file.skrt',
+              key: '/my/key',
+              cert: '/my/cert',
+              cafile: '/my/cafile',
+              token: '12345678910111213' # For testing
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_ds389__instance__selinux__port('636').with_enable(true) }
+          it { is_expected.to create_file(pin_file) }
+          it { is_expected.to create_file(token_file) }
+
+          it do
+            expect(subject).to create_pki__copy("ds389_#{title}")
+              .with_source(%r{/etc/pki})
+              .with_pki(params[:ensure])
+              .with_group('root')
+              .that_notifies("Exec[Build #{title} p12]")
+          end
+
+          it { is_expected.to create_exec("Validate #{title} p12") }
+          it { is_expected.to create_exec("Build #{title} p12") }
+          it { is_expected.to create_exec("Import #{title} p12") }
+          it { is_expected.to create_exec("Import #{title} CA") }
+          it { is_expected.to create_ds389__instance__dn__add("RSA DN for #{title}") }
+          it { is_expected.to create_ds389__instance__attr__set("Configure PKI for #{title}") }
+        end
+
         context 'with PKI disabled' do
           let(:params) do
             {
@@ -157,6 +215,12 @@ describe 'ds389::instance::tls', type: :define do
               root_pw_file: '/some/seekrit/file.skrt',
               :ensure => 'disabled'
             }
+          end
+
+          it do
+            is_expected.to create_ds389__instance__selinux__port('636')
+              .with_enable(false)
+              .with_default(636)
           end
 
           it do
@@ -168,6 +232,16 @@ describe 'ds389::instance::tls', type: :define do
               .with_key('nsslapd-minssf')
               .with_value('0')
           end
+
+          it { is_expected.to_not create_file(pin_file) }
+          it { is_expected.to_not create_file(token_file) }
+          it { is_expected.to_not create_pki__copy("ds389_#{title}") }
+          it { is_expected.to_not create_exec("Validate #{title} p12") }
+          it { is_expected.to_not create_exec("Build #{title} p12") }
+          it { is_expected.to_not create_exec("Import #{title} p12") }
+          it { is_expected.to_not create_exec("Import #{title} CA") }
+          it { is_expected.to_not create_ds389__instance__dn__add("RSA DN for #{title}") }
+          it { is_expected.to_not create_ds389__instance__attr__set("Configure PKI for #{title}") }
         end
       end
     end
