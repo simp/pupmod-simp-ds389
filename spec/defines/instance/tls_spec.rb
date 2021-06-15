@@ -217,31 +217,55 @@ describe 'ds389::instance::tls', type: :define do
             }
           end
 
-          it do
-            is_expected.to create_ds389__instance__selinux__port('636')
-              .with_enable(false)
-              .with_default(636)
+          context 'when 389ds instance available in facts' do
+
+              let(:facts) do
+                os_facts.merge(
+                  {
+                    selinux_enforced: true,
+                    ds389__instances: {
+                      title => {
+                        'port'       => 389,
+                        'securePort' => 636
+                      }
+                    }
+                  }
+                )
+              end
+
+            it { is_expected.to compile.with_all_deps }
+            it do
+              is_expected.to create_ds389__instance__selinux__port('636')
+                .with_enable(false)
+                .with_default(636)
+            end
+
+            it do
+              expect(subject).to create_ds389__instance__attr__set("Do not require encryption for #{title}")
+                .with_instance_name(title)
+                .with_root_dn(params[:root_dn])
+                .with_root_pw_file(params[:root_pw_file])
+                .with_force_ldapi(true)
+                .with_key('nsslapd-minssf')
+                .with_value('0')
+            end
+
+            it { is_expected.to_not create_file(pin_file) }
+            it { is_expected.to_not create_file(token_file) }
+            it { is_expected.to_not create_pki__copy("ds389_#{title}") }
+            it { is_expected.to_not create_exec("Validate #{title} p12") }
+            it { is_expected.to_not create_exec("Build #{title} p12") }
+            it { is_expected.to_not create_exec("Import #{title} p12") }
+            it { is_expected.to_not create_exec("Import #{title} CA") }
+            it { is_expected.to_not create_ds389__instance__dn__add("RSA DN for #{title}") }
+            it { is_expected.to_not create_ds389__instance__attr__set("Configure PKI for #{title}") }
           end
 
-          it do
-            expect(subject).to create_ds389__instance__attr__set("Do not require encryption for #{title}")
-              .with_instance_name(title)
-              .with_root_dn(params[:root_dn])
-              .with_root_pw_file(params[:root_pw_file])
-              .with_force_ldapi(true)
-              .with_key('nsslapd-minssf')
-              .with_value('0')
+          context 'when 389ds instance not available in facts' do
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.to_not create_ds389__instance__selinux__port('636') }
+            it { is_expected.to create_ds389__instance__attr__set("Do not require encryption for #{title}") }
           end
-
-          it { is_expected.to_not create_file(pin_file) }
-          it { is_expected.to_not create_file(token_file) }
-          it { is_expected.to_not create_pki__copy("ds389_#{title}") }
-          it { is_expected.to_not create_exec("Validate #{title} p12") }
-          it { is_expected.to_not create_exec("Build #{title} p12") }
-          it { is_expected.to_not create_exec("Import #{title} p12") }
-          it { is_expected.to_not create_exec("Import #{title} CA") }
-          it { is_expected.to_not create_ds389__instance__dn__add("RSA DN for #{title}") }
-          it { is_expected.to_not create_ds389__instance__attr__set("Configure PKI for #{title}") }
         end
       end
     end

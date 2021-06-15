@@ -101,17 +101,23 @@ define ds389::instance::tls (
       }
     }
 
-    $_selinux_port_ensure = $ensure ? { 'disabled' => false, default => true }
-    ds389::instance::selinux::port { String($port):
-      enable  => $_selinux_port_ensure,
-      default => 636,
-      # Leave this commented out until the LDAPI attribute can be moved out into
-      # its own defined typed and called repeatedly.
-      #
-      #instance => $title,
-    }
 
     if $ensure == 'disabled' {
+      pick($facts['ds389__instances'], {}).each |$daemon, $data| {
+        if ($daemon == $title) and ($data['securePort'] == $port) {
+          # It is only safe to remove the selinux port if you know it is
+          # in use for the 389ds instance
+          ds389::instance::selinux::port { String($port):
+            enable  => false,
+            default => 636,
+            # Leave this commented out until the LDAPI attribute can be moved out into
+            # its own defined typed and called repeatedly.
+            #
+            #instance => $title,
+          }
+        }
+      }
+
       ds389::instance::attr::set { "Do not require encryption for ${title}":
         instance_name => $title,
         root_dn       => $root_dn,
@@ -124,6 +130,15 @@ define ds389::instance::tls (
     else {
       if defined_with_params(Ds389::Instance::Tls, { 'ensure' => $ensure, 'port' => $port }) {
         fail("The port '${port}' is already selected for use by another defined catalog resource")
+      }
+
+      ds389::instance::selinux::port { String($port):
+        enable  => true,
+        default => 636,
+        # Leave this commented out until the LDAPI attribute can be moved out into
+        # its own defined typed and called repeatedly.
+        #
+        #instance => $title,
       }
 
       # Needed to allow unattended starts
