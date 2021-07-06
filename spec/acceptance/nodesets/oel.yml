@@ -10,16 +10,12 @@ HOSTS:
     roles:
       - directory_server
     platform:   el-7-x86_64
-    box:        onyxpoint/oel-7-x86_64
+    box:        generic/oracle7
     box_version: ">= 0.2.0"
     hypervisor: <%= hypervisor %>
     vagrant_memsize: 4096
     vagrant_cpus: 2
-    yum_repos:
-      epel:
-        mirrorlist: 'https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch'
-        gpgkeys:
-          - https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-$releasever
+
   oel8:
     roles:
       - directory_server
