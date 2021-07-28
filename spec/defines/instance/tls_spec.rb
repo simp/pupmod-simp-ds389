@@ -154,17 +154,16 @@ describe 'ds389::instance::tls', type: :define do
                   'allowWeakDHParam' => 'off',
                   'nsSSL2' => 'off',
                   'nsSSL3' => 'off',
-                  'nsSSLClientAuth' => 'required',
+                  'nsSSLClientAuth' => 'allowed',
                   'nsTLS1' => 'on',
                   'nsTLSAllowClientRenegotiation' => 'on',
                   'sslVersionMax' => 'TLS1.2',
-                  'sslVersionMin' => 'TLS1.2',
-                  'nsSSL3Ciphers' => %r{AES_256}
+                  'sslVersionMin' => 'TLS1.2'
                 },
                 'cn=config' => {
                   'nsslapd-ssl-check-hostname' => 'on',
                   'nsslapd-validate-cert' => 'on',
-                  'nsslapd-minssf' => 256,
+                  'nsslapd-minssf' => 128,
                   'nsslapd-require-secure-binds' => 'on',
                   'nsslapd-security' => 'on',
                   'nsslapd-securePort' => 636
