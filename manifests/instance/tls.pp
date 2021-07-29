@@ -72,7 +72,7 @@ define ds389::instance::tls (
         'allowWeakDHParam'              => 'off',
         'nsSSL2'                        => 'off',
         'nsSSL3'                        => 'off',
-        'nsSSLClientAuth'               => 'required',
+        'nsSSLClientAuth'               => 'allowed',
         'nsTLS1'                        => 'on',
         'nsTLSAllowClientRenegotiation' => 'on',
         'sslVersionMax'                 => 'TLS1.2',
@@ -81,7 +81,7 @@ define ds389::instance::tls (
       'cn=config'               => {
         'nsslapd-ssl-check-hostname' => 'on',
         'nsslapd-validate-cert'      => 'on',
-        'nsslapd-minssf'             => 256
+        'nsslapd-minssf'             => 128
       }
     }
 

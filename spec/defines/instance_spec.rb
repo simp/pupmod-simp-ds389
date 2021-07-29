@@ -198,11 +198,8 @@ describe 'ds389::instance', type: :define do
                   {
                     'cn=config' => {
                       'nsslapd-require-secure-binds' => 'on'
-                    },
-                    'cn=encryption,cn=config' => {
-                      'nsSSL3Ciphers' => %r{AES_256}
                     }
-                  },
+                  }
                 )
                 .with_token(%r{^\S{32}$})
                 .with_service_group('dirsrv')
