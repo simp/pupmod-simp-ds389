@@ -11,6 +11,9 @@ define ds389::instance::service (
 
   $_instance_name = split($title, /^(dirsrv@)?slapd-/)[-1]
 
+  # Ensure that services start at boot time
+  ensure_resource('service', 'dirsrv.target', { enable => true })
+
   ensure_resource('service', "dirsrv@${_instance_name}",
     {
       ensure     => $ensure,
