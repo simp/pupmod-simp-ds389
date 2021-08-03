@@ -360,6 +360,8 @@ pup6.pe-fips:
 pup6.pe-oel:
   <<: *pup_6_pe
   <<: *acceptance_base
+  # OEL modularity repos are broken
+  allow_failure: true
   script:
     - 'bundle exec rake beaker:suites[default,oel]'
 
@@ -367,6 +369,8 @@ pup6.pe-oel-fips:
   <<: *pup_6_pe
   <<: *acceptance_base
   <<: *with_SIMP_ACCEPTANCE_MATRIX_LEVEL_3
+  # OEL modularity repos are broken
+  allow_failure: true
   script:
     - 'BEAKER_fips=yes bundle exec rake beaker:suites[default,oel]'
 
