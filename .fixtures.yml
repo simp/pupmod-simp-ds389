@@ -14,6 +14,7 @@ fixtures:
       repo: https://github.com/simp/pupmod-voxpupuli-selinux.git
       branch: simp-master
     selinux: https://github.com/simp/pupmod-simp-selinux.git
+    systemd: https://github.com/simp/puppet-systemd.git
 
 # Testing
     auditd: https://github.com/simp/pupmod-simp-auditd.git
