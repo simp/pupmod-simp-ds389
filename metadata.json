@@ -9,6 +9,10 @@
   "issues_url": "https://simp-project.atlassian.net",
   "dependencies": [
     {
+      "name": "camptocamp/systemd",
+      "version_requirement": ">= 2.7.0 < 3.0.0"
+    },
+    {
       "name": "simp/simplib",
       "version_requirement": ">= 4.4.1 < 5.0.0"
     },

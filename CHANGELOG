@@ -1,6 +1,8 @@
 * Tue Aug 03 2021 Trevor Vaughan <tvaughan@onyxoint.com> - 0.1.1
 - Fixed
   - Ensure that dirsrv.target is enabled so that all 389ds instances start at boot
+  - Set the journald LogLevelMax to warning for instances to reduce unnecessary
+    log noise
 
 * Tue Jun 15 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 0.1.0
 - Initial release
