@@ -37,7 +37,6 @@ CONFIG:
     keepalive: true
     keepalive_interval: 10
     keepalive_maxcount: 120
-    max_connection_tries: 5
     host_key:
       - <%= Net::SSH::Transport::Algorithms::ALGORITHMS[:host_key].join("\n#{' '*6}- ") %>
     kex:
