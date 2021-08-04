@@ -137,6 +137,15 @@ describe 'Set up 389DS' do
         apply_manifest_on(host, manifest, catch_changes: true)
       end
 
+      it 'is running the dirsrv@test_in service' do
+        status = YAML.safe_load(
+          on(host, 'puppet resource --to_yaml service dirsrv@test_in')
+          .stdout
+        )
+
+        expect(status['service']['dirsrv@test_in']['ensure']).to eq('running')
+      end
+
       it 'can login to 389DS' do
         # rubocop:disable Layout/LineLength
         on(host, %(ldapsearch -x -y "#{root_dn_password_file}" -D "#{hieradata['ds389::instances'][ds_root_name]['root_dn']}" -H ldapi://%2fvar%2frun%2fslapd-#{ds_root_name}.socket -b "cn=tasks,cn=config"))
@@ -167,6 +176,16 @@ describe 'Set up 389DS' do
         expect( scrap_details.key?('require-secure-binds') ).to be false
         expect( scrap_details['rootdn'] ).to eq('cn=Scrap_Admin')
         expect( scrap_details.key?('securePort') ).to be false
+      end
+
+      it 'starts after reboot' do
+        host.reboot
+        status = YAML.safe_load(
+          on(host, 'puppet resource --to_yaml service dirsrv@test_in')
+          .stdout
+        )
+
+        expect(status['service']['dirsrv@test_in']['ensure']).to eq('running')
       end
     end
 

@@ -1,6 +1,6 @@
 {
   "name": "simp-ds389",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "SIMP Team",
   "summary": "Management of 389 Directory Server",
   "license": "Apache-2.0",
