@@ -40,6 +40,14 @@ class ds389 (
     recurse => true
   }
 
+  file { "$config_dir/ca_import.sh":
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0700',
+    content => epp("${module_name}/ca_import.sh.epp")
+  }
+
   $instances.each |$id, $options| {
     ds389::instance { $id:
       * => $options

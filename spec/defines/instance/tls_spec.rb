@@ -56,7 +56,7 @@ describe 'ds389::instance::tls', type: :define do
           it { is_expected.to_not create_exec("Validate #{title} p12") }
           it { is_expected.to_not create_exec("Build #{title} p12") }
           it { is_expected.to_not create_exec("Import #{title} p12") }
-          it { is_expected.to_not create_exec("Import #{title} CA") }
+          it { is_expected.to_not create_exec("Import #{title} CAs") }
           it { is_expected.to_not create_ds389__instance__dn__add("RSA DN for #{title}") }
           it { is_expected.to_not create_ds389__instance__attr__set("Configure PKI for #{title}") }
         end
@@ -129,8 +129,9 @@ describe 'ds389::instance::tls', type: :define do
           end
 
           it do
-            expect(subject).to create_exec("Import #{title} CA")
-              .with_command("certutil -D -d #{instance_base} -n 'CA Certificate' ||:; certutil -A -i #{params[:cafile]} -d #{instance_base} -n 'CA Certificate' -t 'CT,,' -a -f #{token_file}")
+            expect(subject).to create_exec("Import #{title} CAs")
+              .with_command("/usr/share/puppet_ds389_config/ca_import.sh -i '#{params[:cafile]}' -o '#{instance_base}'")
+              .with_onlyif("/usr/share/puppet_ds389_config/ca_import.sh -i '#{params[:cafile]}' -o '#{instance_base}' -c; [ $? -eq 2 ]")
               .with_path(['/bin', '/usr/bin'])
               .that_subscribes_to("Exec[Build #{title} p12]")
           end
@@ -202,7 +203,7 @@ describe 'ds389::instance::tls', type: :define do
           it { is_expected.to create_exec("Validate #{title} p12") }
           it { is_expected.to create_exec("Build #{title} p12") }
           it { is_expected.to create_exec("Import #{title} p12") }
-          it { is_expected.to create_exec("Import #{title} CA") }
+          it { is_expected.to create_exec("Import #{title} CAs") }
           it { is_expected.to create_ds389__instance__dn__add("RSA DN for #{title}") }
           it { is_expected.to create_ds389__instance__attr__set("Configure PKI for #{title}") }
         end
@@ -255,7 +256,7 @@ describe 'ds389::instance::tls', type: :define do
             it { is_expected.to_not create_exec("Validate #{title} p12") }
             it { is_expected.to_not create_exec("Build #{title} p12") }
             it { is_expected.to_not create_exec("Import #{title} p12") }
-            it { is_expected.to_not create_exec("Import #{title} CA") }
+            it { is_expected.to_not create_exec("Import #{title} CAs") }
             it { is_expected.to_not create_ds389__instance__dn__add("RSA DN for #{title}") }
             it { is_expected.to_not create_ds389__instance__attr__set("Configure PKI for #{title}") }
           end

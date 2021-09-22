@@ -24,12 +24,8 @@ HOSTS:
 CONFIG:
   log_level: verbose
   type: aio
-<% if ENV['BEAKER_fips'] -%>
   vagrant_memsize: 1024
-<% else -%>
-  vagrant_memsize: 512
-<% end -%>
-  vagrant_cpus: 1
+  vagrant_cpus: 2
 <% if ENV['BEAKER_PUPPET_ENVIRONMENT'] -%>
   puppet_environment: <%= ENV['BEAKER_PUPPET_ENVIRONMENT'] %>
 <% end -%>
