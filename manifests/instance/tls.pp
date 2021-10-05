@@ -60,7 +60,7 @@ define ds389::instance::tls (
   Stdlib::Absolutepath                      $key           = "/etc/pki/simp_apps/${module_name}_${title}/x509/private/${facts['fqdn']}.pem",
   Stdlib::Absolutepath                      $cafile        = "/etc/pki/simp_apps/${module_name}_${title}/x509/cacerts/cacerts.pem",
   Ds389::ConfigItems                        $dse_config    = simplib::dlookup('ds389::instance::tls', 'dse_config', { 'default_value' => {} }),
-  String[16]                                $token         = simplib::passgen("ds389_${title}_pki", { 'length' => 32 }),
+  String[16]                                $token         = simplib::passgen("ds389_${title}_pki", { 'length' => 32, 'complexity' => 1 }),
   String[1]                                 $service_group = 'dirsrv'
 ) {
   assert_private()
@@ -192,10 +192,11 @@ define ds389::instance::tls (
         subscribe => Exec["Build ${title} p12"]
       }
 
-      exec { "Import ${title} CA":
-        command   => "certutil -D -d ${_instance_base} -n 'CA Certificate' ||:; certutil -A -i ${cafile} -d ${_instance_base} -n 'CA Certificate' -t 'CT,,' -a -f ${_token_file}",
-        unless    => "certutil -d ${_instance_base} -L -n 'CA Certificate'",
+      exec { "Import ${title} CAs":
+        command   => "${ds389::config_dir}/ca_import.sh -i '${cafile}' -o '${_instance_base}'",
+        onlyif    => "${ds389::config_dir}/ca_import.sh -i '${cafile}' -o '${_instance_base}' -c; [ \$? -eq 2 ]",
         path      => ['/bin', '/usr/bin'],
+        require   => File["${ds389::config_dir}/ca_import.sh"],
         subscribe => Exec["Build ${title} p12"]
       }
 

@@ -1,0 +1,115 @@
+#!/bin/bash
+
+usage() {
+  echo "Import PEM CA certificates into a trust store using certutil"
+  echo
+  echo "Usage: $0 -i <input_pem> -o <output_dir>"
+  echo "  -i <input_pem>  Path to the input CAcerts PEM"
+  echo "  -o <output_dir> Path to the certutil store"
+  echo "  -t <token_file> Path to the certutil token file"
+  echo "  -c              Only compare, do not update; exits with 2 if update needed"
+  echo "  -h              This help"
+  exit 0
+}
+
+compare_only=false
+
+[ $# -eq 0 ] && usage
+while getopts ":hci:o:t:" opt; do
+  case $opt in
+    c)
+      compare_only=true
+      ;;
+    i)
+      input_pem=${OPTARG}
+      ;;
+    o)
+      output_dir=${OPTARG}
+      ;;
+    t)
+      token_file=${OPTARG}
+      ;;
+    h | *)
+      usage
+      exit 0
+      ;;
+  esac
+done
+
+if [ -z "${input_pem}" ] || [ -z "${output_dir}" ]; then
+  echo "Error: You must specify both 'input_pem' and 'output_dir'"
+  exit 1
+fi
+
+if ! $compare_only; then
+  if [ -z "${token_file}" ]; then
+    token_file="${output_dir}/p12token.txt"
+  fi
+
+  if [ ! -f "${token_file}" ]; then
+    echo "Error: Could not find a token file at '${token_file}'"
+    exit 1
+  fi
+fi
+
+
+if [ ! -f "${input_pem}" ]; then
+  echo "Error: Could not find input PEM at '${input_pem}'"
+  exit 1
+fi
+
+if [ ! -d "${output_dir}" ]; then
+  echo "Error: Could not find output directory at '${output_dir}'"
+  exit 1
+fi
+
+# Validate the output dir
+certutil -d "${output_dir}" -L >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "Error: '${output_dir}' is not a valid database target"
+  exit 1
+fi
+
+# Get the existing CA fingerprints
+current_fingerprints=$(
+  certutil -d "${output_dir}" -L | \
+    grep '[[:space:]]CT,' | \
+    sed 's/^\(.\+\)CT,.*/\1/' | \
+    sed 's/[[:space:]]\+$//' | \
+    while read cert; do
+      (
+        certutil -d "${output_dir}" -L -a -n "${cert}" | \
+          openssl x509 -noout -fingerprint | \
+          cut -f2 -d'='
+      )
+    done
+)
+
+umask 0077
+tmpdir=$(mktemp -d -t 389ds-cert-import-XXXXXXXXXX)
+
+(
+  cd "$tmpdir"
+
+  csplit -z -q "${input_pem}" '/^\-\+BEGIN CERTIFICATE\-\+$/' '{*}'
+
+  for x in *; do
+    fprint=$( openssl x509 -in "${x}" -noout -fingerprint | cut -f2 -d'=' )
+
+    if [[ ! ${current_fingerprints[*]} =~ $fprint ]]; then
+      if $compare_only; then
+        exit 2
+      fi
+
+      cert_name=$( openssl x509 -in "${x}" -noout -subject_hash )
+
+      certutil -D -d "${output_dir}" -n "${cert_name}" >/dev/null 2>&1 ||:
+      certutil -A -i "${x}" -d "${output_dir}" -n "${cert_name}" -t 'CT,,' -a -f "${token_file}"
+    fi
+  done
+)
+exit_code=$?
+
+rm -rf "$tmpdir"
+
+exit $exit_code
