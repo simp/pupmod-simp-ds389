@@ -1,6 +1,6 @@
 {
   "name": "simp-ds389",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "author": "SIMP Team",
   "summary": "Management of 389 Directory Server",
   "license": "Apache-2.0",
@@ -9,8 +9,8 @@
   "issues_url": "https://simp-project.atlassian.net",
   "dependencies": [
     {
-      "name": "camptocamp/systemd",
-      "version_requirement": ">= 2.7.0 < 3.0.0"
+      "name": "puppet/systemd",
+      "version_requirement": ">= 3.0.0 < 4.0.0"
     },
     {
       "name": "simp/simplib",
