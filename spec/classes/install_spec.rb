@@ -17,7 +17,8 @@ describe 'ds389::install' do
 
       context "with #{os}" do
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_package('389-ds-base').with_ensure('present') }
+        # Work around for https://github.com/puppetlabs/puppetlabs-stdlib/pull/1196
+        it { is_expected.to contain_package('389-ds-base').with_ensure(/\A(present|installed)\Z/) }
         it { is_expected.not_to contain_package('389-admin') }
         it { is_expected.not_to contain_package('389-admin-console') }
         it { is_expected.not_to contain_package('389-ds-console') }
