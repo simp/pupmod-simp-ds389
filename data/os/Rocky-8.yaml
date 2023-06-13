@@ -1,0 +1,6 @@
+---
+ds389::install::package_list:
+  - 389-ds-base
+ds389::install::dnf_module: 389-directory-server
+ds389::install::dnf_stream: stable
+ds389::install::dnf_profile: minimal
