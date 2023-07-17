@@ -40,7 +40,7 @@ class ds389 (
     recurse => true
   }
 
-  file { "$config_dir/ca_import.sh":
+  file { "${config_dir}/ca_import.sh":
     ensure  => 'file',
     owner   => 'root',
     group   => 'root',

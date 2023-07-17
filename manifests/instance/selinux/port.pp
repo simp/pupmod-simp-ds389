@@ -11,7 +11,7 @@ define ds389::instance::selinux::port (
 
   $_port = Integer($title)
 
-  if ($_port != $default) and $facts['selinux_enforced'] {
+  if ($_port != $default) and $facts['os']['selinux']['enforced'] {
     if simplib::module_exist('simp/selinux') {
       simplib::assert_optional_dependency($module_name, 'simp/selinux')
       simplib::assert_optional_dependency($module_name, 'simp/vox_selinux')

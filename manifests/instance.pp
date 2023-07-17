@@ -75,7 +75,7 @@ define ds389::instance (
   Simplib::Port                  $port                   = 389,
   Simplib::Port                  $secure_port            = 636,
   Optional[Pattern['^[\S]+$']]   $root_dn_password       = undef,
-  String[1]                      $machine_name           = $facts['fqdn'],
+  String[1]                      $machine_name           = $facts['networking']['fqdn'],
   String[1]                      $service_user           = 'dirsrv',
   String[1]                      $service_group          = 'dirsrv',
   Optional[String[1]]            $bootstrap_ldif_content = undef,
