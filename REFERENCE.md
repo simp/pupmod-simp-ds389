@@ -7,17 +7,17 @@
 ### Classes
 
 * [`ds389`](#ds389): Set up a local 389DS server
-* [`ds389::install`](#ds389install): Set up a local 389DS server
+* [`ds389::install`](#ds389--install): Set up a local 389DS server
 
 ### Defined types
 
 #### Public Defined types
 
-* [`ds389::instance`](#ds389instance)
-* [`ds389::instance::attr::set`](#ds389instanceattrset): Modifies the running directory server configuration and restarts the service when necessary.  NOTE: When calling this defined type as you fir
-* [`ds389::instance::dn::add`](#ds389instancednadd): Creates the passed DN using the provided paramters  NOTE: When calling this defined type as you first set up an instance, you will need to pa
-* [`ds389::instance::selinux::port`](#ds389instanceselinuxport): Consolidate selinux_port enable/disable logic
-* [`ds389::instance::service`](#ds389instanceservice): Configure an instance service
+* [`ds389::instance`](#ds389--instance)
+* [`ds389::instance::attr::set`](#ds389--instance--attr--set): Modifies the running directory server configuration and restarts the service when necessary.  NOTE: When calling this defined type as you fir
+* [`ds389::instance::dn::add`](#ds389--instance--dn--add): Creates the passed DN using the provided paramters  NOTE: When calling this defined type as you first set up an instance, you will need to pa
+* [`ds389::instance::selinux::port`](#ds389--instance--selinux--port): Consolidate selinux_port enable/disable logic
+* [`ds389::instance::service`](#ds389--instance--service): Configure an instance service
 
 #### Private Defined types
 
@@ -25,8 +25,8 @@
 
 ### Data types
 
-* [`Ds389::ConfigItem`](#ds389configitem): Valid configuration item
-* [`Ds389::ConfigItems`](#ds389configitems): Valid configuration items Hash
+* [`Ds389::ConfigItem`](#Ds389--ConfigItem): Valid configuration item
+* [`Ds389::ConfigItems`](#Ds389--ConfigItems): Valid configuration items Hash
 
 ## Classes
 
@@ -38,13 +38,13 @@ Set up a local 389DS server
 
 The following parameters are available in the `ds389` class:
 
-* [`service_group`](#service_group)
-* [`ldif_working_dir`](#ldif_working_dir)
-* [`instances`](#instances)
-* [`package_ensure`](#package_ensure)
-* [`config_dir`](#config_dir)
+* [`service_group`](#-ds389--service_group)
+* [`ldif_working_dir`](#-ds389--ldif_working_dir)
+* [`instances`](#-ds389--instances)
+* [`package_ensure`](#-ds389--package_ensure)
+* [`config_dir`](#-ds389--config_dir)
 
-##### <a name="service_group"></a>`service_group`
+##### <a name="-ds389--service_group"></a>`service_group`
 
 Data type: `String[1]`
 
@@ -52,7 +52,7 @@ The group DS389 is installed under.
 
 Default value: `'dirsrv'`
 
-##### <a name="ldif_working_dir"></a>`ldif_working_dir`
+##### <a name="-ds389--ldif_working_dir"></a>`ldif_working_dir`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -61,7 +61,7 @@ configuration.
 
 Default value: `"${config_dir}/ldifs"`
 
-##### <a name="instances"></a>`instances`
+##### <a name="-ds389--instances"></a>`instances`
 
 Data type: `Hash`
 
@@ -69,7 +69,7 @@ A hash of instances to be created when the server is installed.
 
 Default value: `{}`
 
-##### <a name="package_ensure"></a>`package_ensure`
+##### <a name="-ds389--package_ensure"></a>`package_ensure`
 
 Data type: `Simplib::PackageEnsure`
 
@@ -77,7 +77,7 @@ What to do regarding package installation
 
 Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })`
 
-##### <a name="config_dir"></a>`config_dir`
+##### <a name="-ds389--config_dir"></a>`config_dir`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -85,7 +85,7 @@ Data type: `Stdlib::Absolutepath`
 
 Default value: `'/usr/share/puppet_ds389_config'`
 
-### <a name="ds389install"></a>`ds389::install`
+### <a name="ds389--install"></a>`ds389::install`
 
 Set up a local 389DS server
 
@@ -93,24 +93,24 @@ Set up a local 389DS server
 
 The following parameters are available in the `ds389::install` class:
 
-* [`package_list`](#package_list)
-* [`setup_command`](#setup_command)
-* [`dnf_module`](#dnf_module)
-* [`dnf_stream`](#dnf_stream)
-* [`dnf_enable_only`](#dnf_enable_only)
-* [`dnf_profile`](#dnf_profile)
-* [`remove_command`](#remove_command)
+* [`package_list`](#-ds389--install--package_list)
+* [`setup_command`](#-ds389--install--setup_command)
+* [`dnf_module`](#-ds389--install--dnf_module)
+* [`dnf_stream`](#-ds389--install--dnf_stream)
+* [`dnf_enable_only`](#-ds389--install--dnf_enable_only)
+* [`dnf_profile`](#-ds389--install--dnf_profile)
+* [`remove_command`](#-ds389--install--remove_command)
 
-##### <a name="package_list"></a>`package_list`
+##### <a name="-ds389--install--package_list"></a>`package_list`
 
 Data type: `Optional[Array[String[1]]]`
 
 A list of packages that will installed instead of the internally selected
 packages.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="setup_command"></a>`setup_command`
+##### <a name="-ds389--install--setup_command"></a>`setup_command`
 
 Data type: `Stdlib::Unixpath`
 
@@ -118,39 +118,39 @@ The path to the setup command on the system
 
 Default value: `'/sbin/setup-ds.pl'`
 
-##### <a name="dnf_module"></a>`dnf_module`
+##### <a name="-ds389--install--dnf_module"></a>`dnf_module`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dnf_stream"></a>`dnf_stream`
+##### <a name="-ds389--install--dnf_stream"></a>`dnf_stream`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dnf_enable_only"></a>`dnf_enable_only`
+##### <a name="-ds389--install--dnf_enable_only"></a>`dnf_enable_only`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="dnf_profile"></a>`dnf_profile`
+##### <a name="-ds389--install--dnf_profile"></a>`dnf_profile`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="remove_command"></a>`remove_command`
+##### <a name="-ds389--install--remove_command"></a>`remove_command`
 
 Data type: `Stdlib::Unixpath`
 
@@ -160,7 +160,7 @@ Default value: `'/sbin/remove-ds.pl'`
 
 ## Defined types
 
-### <a name="ds389instance"></a>`ds389::instance`
+### <a name="ds389--instance"></a>`ds389::instance`
 
 The ds389::instance class.
 
@@ -168,24 +168,24 @@ The ds389::instance class.
 
 The following parameters are available in the `ds389::instance` defined type:
 
-* [`ensure`](#ensure)
-* [`base_dn`](#base_dn)
-* [`root_dn`](#root_dn)
-* [`listen_address`](#listen_address)
-* [`port`](#port)
-* [`secure_port`](#secure_port)
-* [`root_dn_password`](#root_dn_password)
-* [`machine_name`](#machine_name)
-* [`service_user`](#service_user)
-* [`service_group`](#service_group)
-* [`bootstrap_ldif_content`](#bootstrap_ldif_content)
-* [`ds_setup_ini_content`](#ds_setup_ini_content)
-* [`general_config`](#general_config)
-* [`password_policy`](#password_policy)
-* [`enable_tls`](#enable_tls)
-* [`tls_params`](#tls_params)
+* [`ensure`](#-ds389--instance--ensure)
+* [`base_dn`](#-ds389--instance--base_dn)
+* [`root_dn`](#-ds389--instance--root_dn)
+* [`listen_address`](#-ds389--instance--listen_address)
+* [`port`](#-ds389--instance--port)
+* [`secure_port`](#-ds389--instance--secure_port)
+* [`root_dn_password`](#-ds389--instance--root_dn_password)
+* [`machine_name`](#-ds389--instance--machine_name)
+* [`service_user`](#-ds389--instance--service_user)
+* [`service_group`](#-ds389--instance--service_group)
+* [`bootstrap_ldif_content`](#-ds389--instance--bootstrap_ldif_content)
+* [`ds_setup_ini_content`](#-ds389--instance--ds_setup_ini_content)
+* [`general_config`](#-ds389--instance--general_config)
+* [`password_policy`](#-ds389--instance--password_policy)
+* [`enable_tls`](#-ds389--instance--enable_tls)
+* [`tls_params`](#-ds389--instance--tls_params)
 
-##### <a name="ensure"></a>`ensure`
+##### <a name="-ds389--instance--ensure"></a>`ensure`
 
 Data type: `Enum['present','absent']`
 
@@ -193,23 +193,23 @@ Data type: `Enum['present','absent']`
 
 Default value: `'present'`
 
-##### <a name="base_dn"></a>`base_dn`
+##### <a name="-ds389--instance--base_dn"></a>`base_dn`
 
 Data type: `Optional[String[2]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="root_dn"></a>`root_dn`
+##### <a name="-ds389--instance--root_dn"></a>`root_dn`
 
 Data type: `Optional[Pattern['^[\S]+$']]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="listen_address"></a>`listen_address`
+##### <a name="-ds389--instance--listen_address"></a>`listen_address`
 
 Data type: `Simplib::IP`
 
@@ -217,7 +217,7 @@ Data type: `Simplib::IP`
 
 Default value: `'127.0.0.1'`
 
-##### <a name="port"></a>`port`
+##### <a name="-ds389--instance--port"></a>`port`
 
 Data type: `Simplib::Port`
 
@@ -225,7 +225,7 @@ Data type: `Simplib::Port`
 
 Default value: `389`
 
-##### <a name="secure_port"></a>`secure_port`
+##### <a name="-ds389--instance--secure_port"></a>`secure_port`
 
 Data type: `Simplib::Port`
 
@@ -233,31 +233,23 @@ Data type: `Simplib::Port`
 
 Default value: `636`
 
-##### <a name="root_dn_password"></a>`root_dn_password`
+##### <a name="-ds389--instance--root_dn_password"></a>`root_dn_password`
 
 Data type: `Optional[Pattern['^[\S]+$']]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="machine_name"></a>`machine_name`
-
-Data type: `String[1]`
-
-
-
-Default value: `$facts['fqdn']`
-
-##### <a name="service_user"></a>`service_user`
+##### <a name="-ds389--instance--machine_name"></a>`machine_name`
 
 Data type: `String[1]`
 
 
 
-Default value: `'dirsrv'`
+Default value: `$facts['networking']['fqdn']`
 
-##### <a name="service_group"></a>`service_group`
+##### <a name="-ds389--instance--service_user"></a>`service_user`
 
 Data type: `String[1]`
 
@@ -265,23 +257,31 @@ Data type: `String[1]`
 
 Default value: `'dirsrv'`
 
-##### <a name="bootstrap_ldif_content"></a>`bootstrap_ldif_content`
+##### <a name="-ds389--instance--service_group"></a>`service_group`
+
+Data type: `String[1]`
+
+
+
+Default value: `'dirsrv'`
+
+##### <a name="-ds389--instance--bootstrap_ldif_content"></a>`bootstrap_ldif_content`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ds_setup_ini_content"></a>`ds_setup_ini_content`
+##### <a name="-ds389--instance--ds_setup_ini_content"></a>`ds_setup_ini_content`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="general_config"></a>`general_config`
+##### <a name="-ds389--instance--general_config"></a>`general_config`
 
 Data type: `Ds389::ConfigItem`
 
@@ -289,7 +289,7 @@ Data type: `Ds389::ConfigItem`
 
 Default value: `simplib::dlookup('ds389::instance', 'general_config', {'default_value' => {} })`
 
-##### <a name="password_policy"></a>`password_policy`
+##### <a name="-ds389--instance--password_policy"></a>`password_policy`
 
 Data type: `Ds389::ConfigItem`
 
@@ -297,7 +297,7 @@ Data type: `Ds389::ConfigItem`
 
 Default value: `simplib::dlookup('ds389::instance', 'password_policy', {'default_value' => {} })`
 
-##### <a name="enable_tls"></a>`enable_tls`
+##### <a name="-ds389--instance--enable_tls"></a>`enable_tls`
 
 Data type: `Variant[Boolean, Enum['simp']]`
 
@@ -305,7 +305,7 @@ Data type: `Variant[Boolean, Enum['simp']]`
 
 Default value: `simplib::lookup('simp_options::pki', { 'default_value' => false })`
 
-##### <a name="tls_params"></a>`tls_params`
+##### <a name="-ds389--instance--tls_params"></a>`tls_params`
 
 Data type: `Hash`
 
@@ -313,7 +313,7 @@ Data type: `Hash`
 
 Default value: `simplib::dlookup('ds389::instance', 'tls_params', { 'default_value' => {} })`
 
-### <a name="ds389instanceattrset"></a>`ds389::instance::attr::set`
+### <a name="ds389--instance--attr--set"></a>`ds389::instance::attr::set`
 
 Modifies the running directory server configuration and restarts the service
 when necessary.
@@ -326,19 +326,19 @@ populated.
 
 The following parameters are available in the `ds389::instance::attr::set` defined type:
 
-* [`key`](#key)
-* [`value`](#value)
-* [`attrs`](#attrs)
-* [`base_dn`](#base_dn)
-* [`instance_name`](#instance_name)
-* [`root_dn`](#root_dn)
-* [`root_pw_file`](#root_pw_file)
-* [`host`](#host)
-* [`port`](#port)
-* [`force_ldapi`](#force_ldapi)
-* [`restart_instance`](#restart_instance)
+* [`key`](#-ds389--instance--attr--set--key)
+* [`value`](#-ds389--instance--attr--set--value)
+* [`attrs`](#-ds389--instance--attr--set--attrs)
+* [`base_dn`](#-ds389--instance--attr--set--base_dn)
+* [`instance_name`](#-ds389--instance--attr--set--instance_name)
+* [`root_dn`](#-ds389--instance--attr--set--root_dn)
+* [`root_pw_file`](#-ds389--instance--attr--set--root_pw_file)
+* [`host`](#-ds389--instance--attr--set--host)
+* [`port`](#-ds389--instance--attr--set--port)
+* [`force_ldapi`](#-ds389--instance--attr--set--force_ldapi)
+* [`restart_instance`](#-ds389--instance--attr--set--restart_instance)
 
-##### <a name="key"></a>`key`
+##### <a name="-ds389--instance--attr--set--key"></a>`key`
 
 Data type: `Optional[String[1]]`
 
@@ -351,17 +351,17 @@ The configuration key to be set
   * Mutually exclusive with `$attrs`
   * `$value` must be set when using this parameter.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="value"></a>`value`
+##### <a name="-ds389--instance--attr--set--value"></a>`value`
 
 Data type: `Optional[String[1]]`
 
 The value that should be set for `$key`
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="attrs"></a>`attrs`
+##### <a name="-ds389--instance--attr--set--attrs"></a>`attrs`
 
 Data type: `Ds389::ConfigItems`
 
@@ -375,7 +375,7 @@ Hash of attributes to be set.
 
 Default value: `{}`
 
-##### <a name="base_dn"></a>`base_dn`
+##### <a name="-ds389--instance--attr--set--base_dn"></a>`base_dn`
 
 Data type: `String[2]`
 
@@ -383,13 +383,13 @@ The base DN under which to search
 
 Default value: `'cn=config'`
 
-##### <a name="instance_name"></a>`instance_name`
+##### <a name="-ds389--instance--attr--set--instance_name"></a>`instance_name`
 
 Data type: `Simplib::Systemd::ServiceName`
 
 The Puppet resource name for the directory ``Service`` resource
 
-##### <a name="root_dn"></a>`root_dn`
+##### <a name="-ds389--instance--attr--set--root_dn"></a>`root_dn`
 
 Data type: `Optional[String[2]]`
 
@@ -397,9 +397,9 @@ A DN with administrative rights to the directory
 
 * Will be determined automatically if not set
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="root_pw_file"></a>`root_pw_file`
+##### <a name="-ds389--instance--attr--set--root_pw_file"></a>`root_pw_file`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
@@ -407,9 +407,9 @@ A file containing the password for use with ``$root_dn``
 
 * Defaults to `$ds389::config_dir/<usual pw file>`
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="host"></a>`host`
+##### <a name="-ds389--instance--attr--set--host"></a>`host`
 
 Data type: `Optional[Simplib::Host]`
 
@@ -418,9 +418,9 @@ The host to which to connect
 * Has no effect if LDAPI is enabled on the instance
 * Will use 127.0.01 if not set
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="port"></a>`port`
+##### <a name="-ds389--instance--attr--set--port"></a>`port`
 
 Data type: `Optional[Simplib::Port]`
 
@@ -429,9 +429,9 @@ The port to which to connect
 * Has no effect if LDAPI is enabled on the instance
 * Will be determined automatically if not set
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="force_ldapi"></a>`force_ldapi`
+##### <a name="-ds389--instance--attr--set--force_ldapi"></a>`force_ldapi`
 
 Data type: `Boolean`
 
@@ -439,9 +439,9 @@ Force the system to use the LDAPI interface
 
 * Generally only useful during bootstrapping
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="restart_instance"></a>`restart_instance`
+##### <a name="-ds389--instance--attr--set--restart_instance"></a>`restart_instance`
 
 Data type: `Boolean`
 
@@ -449,9 +449,9 @@ Whether or not to restart the directory server after applying this item
 
 * This may be enabled automatically by `$attrs`
 
-Default value: ``false``
+Default value: `false`
 
-### <a name="ds389instancednadd"></a>`ds389::instance::dn::add`
+### <a name="ds389--instance--dn--add"></a>`ds389::instance::dn::add`
 
 Creates the passed DN using the provided paramters
 
@@ -465,49 +465,49 @@ If passing a full LDIF - DO NOT WRAP LINES
 
 The following parameters are available in the `ds389::instance::dn::add` defined type:
 
-* [`instance_name`](#instance_name)
-* [`dn`](#dn)
-* [`objectclass`](#objectclass)
-* [`attrs`](#attrs)
-* [`content`](#content)
-* [`root_dn`](#root_dn)
-* [`root_pw_file`](#root_pw_file)
-* [`host`](#host)
-* [`port`](#port)
-* [`force_ldapi`](#force_ldapi)
-* [`restart_instance`](#restart_instance)
+* [`instance_name`](#-ds389--instance--dn--add--instance_name)
+* [`dn`](#-ds389--instance--dn--add--dn)
+* [`objectclass`](#-ds389--instance--dn--add--objectclass)
+* [`attrs`](#-ds389--instance--dn--add--attrs)
+* [`content`](#-ds389--instance--dn--add--content)
+* [`root_dn`](#-ds389--instance--dn--add--root_dn)
+* [`root_pw_file`](#-ds389--instance--dn--add--root_pw_file)
+* [`host`](#-ds389--instance--dn--add--host)
+* [`port`](#-ds389--instance--dn--add--port)
+* [`force_ldapi`](#-ds389--instance--dn--add--force_ldapi)
+* [`restart_instance`](#-ds389--instance--dn--add--restart_instance)
 
-##### <a name="instance_name"></a>`instance_name`
+##### <a name="-ds389--instance--dn--add--instance_name"></a>`instance_name`
 
 Data type: `Simplib::Systemd::ServiceName`
 
 The instance name as passed to `ds389::instance`
 
-##### <a name="dn"></a>`dn`
+##### <a name="-ds389--instance--dn--add--dn"></a>`dn`
 
 Data type: `Optional[Pattern['^\S+=.+']]`
 
 The DN to be created
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="objectclass"></a>`objectclass`
+##### <a name="-ds389--instance--dn--add--objectclass"></a>`objectclass`
 
 Data type: `Optional[Array[String[1],1]]`
 
 objectClasses to which the DN belongs
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="attrs"></a>`attrs`
+##### <a name="-ds389--instance--dn--add--attrs"></a>`attrs`
 
 Data type: `Optional[Hash[String[1],String[1],1]]`
 
 Attributes that you wish to set at the time of creation
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="content"></a>`content`
+##### <a name="-ds389--instance--dn--add--content"></a>`content`
 
 Data type: `Optional[String[3]]`
 
@@ -517,9 +517,9 @@ The full content of the LDIF
 * All other parameters will be ignored
 * DO NOT add 'changetype: add'
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="root_dn"></a>`root_dn`
+##### <a name="-ds389--instance--dn--add--root_dn"></a>`root_dn`
 
 Data type: `Optional[String[2]]`
 
@@ -527,9 +527,9 @@ A DN with administrative rights to the directory
 
 * Will be determined automatically if not set
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="root_pw_file"></a>`root_pw_file`
+##### <a name="-ds389--instance--dn--add--root_pw_file"></a>`root_pw_file`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
@@ -537,9 +537,9 @@ A file containing the password for use with ``$root_dn``
 
 * Defaults to `$ds389::config_dir/<usual pw file>`
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="host"></a>`host`
+##### <a name="-ds389--instance--dn--add--host"></a>`host`
 
 Data type: `Optional[Simplib::Host]`
 
@@ -548,9 +548,9 @@ The host to which to connect
 * Has no effect if LDAPI is enabled on the instance
 * Will use 127.0.01 if not set
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="port"></a>`port`
+##### <a name="-ds389--instance--dn--add--port"></a>`port`
 
 Data type: `Optional[Simplib::Port]`
 
@@ -559,9 +559,9 @@ The port to which to connect
 * Has no effect if LDAPI is enabled on the instance
 * Will be determined automatically if not set
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="force_ldapi"></a>`force_ldapi`
+##### <a name="-ds389--instance--dn--add--force_ldapi"></a>`force_ldapi`
 
 Data type: `Boolean`
 
@@ -569,17 +569,17 @@ Force the system to use the LDAPI interface
 
 * Generally only useful during bootstrapping
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="restart_instance"></a>`restart_instance`
+##### <a name="-ds389--instance--dn--add--restart_instance"></a>`restart_instance`
 
 Data type: `Boolean`
 
 Whether or not to restart the directory server after applying this item
 
-Default value: ``false``
+Default value: `false`
 
-### <a name="ds389instanceselinuxport"></a>`ds389::instance::selinux::port`
+### <a name="ds389--instance--selinux--port"></a>`ds389::instance::selinux::port`
 
 Consolidate selinux_port enable/disable logic
 
@@ -587,33 +587,33 @@ Consolidate selinux_port enable/disable logic
 
 The following parameters are available in the `ds389::instance::selinux::port` defined type:
 
-* [`default`](#default)
-* [`instance`](#instance)
-* [`enable`](#enable)
+* [`default`](#-ds389--instance--selinux--port--default)
+* [`instance`](#-ds389--instance--selinux--port--instance)
+* [`enable`](#-ds389--instance--selinux--port--enable)
 
-##### <a name="default"></a>`default`
+##### <a name="-ds389--instance--selinux--port--default"></a>`default`
 
 Data type: `Simplib::Port`
 
 
 
-##### <a name="instance"></a>`instance`
+##### <a name="-ds389--instance--selinux--port--instance"></a>`instance`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="enable"></a>`enable`
+##### <a name="-ds389--instance--selinux--port--enable"></a>`enable`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-### <a name="ds389instanceservice"></a>`ds389::instance::service`
+### <a name="ds389--instance--service"></a>`ds389::instance::service`
 
 Configure an instance service
 
@@ -621,11 +621,11 @@ Configure an instance service
 
 The following parameters are available in the `ds389::instance::service` defined type:
 
-* [`ensure`](#ensure)
-* [`enable`](#enable)
-* [`hasrestart`](#hasrestart)
+* [`ensure`](#-ds389--instance--service--ensure)
+* [`enable`](#-ds389--instance--service--enable)
+* [`hasrestart`](#-ds389--instance--service--hasrestart)
 
-##### <a name="ensure"></a>`ensure`
+##### <a name="-ds389--instance--service--ensure"></a>`ensure`
 
 Data type: `Enum['stopped','running']`
 
@@ -633,7 +633,7 @@ Data type: `Enum['stopped','running']`
 
 Default value: `simplib::dlookup('ds389::instance::service', 'ensure', $name, { 'default_value' => 'running'})`
 
-##### <a name="enable"></a>`enable`
+##### <a name="-ds389--instance--service--enable"></a>`enable`
 
 Data type: `Boolean`
 
@@ -641,7 +641,7 @@ Data type: `Boolean`
 
 Default value: `simplib::dlookup('ds389::instance::service', 'enable', $name, { 'default_value' => true})`
 
-##### <a name="hasrestart"></a>`hasrestart`
+##### <a name="-ds389--instance--service--hasrestart"></a>`hasrestart`
 
 Data type: `Boolean`
 
@@ -651,23 +651,15 @@ Default value: `simplib::dlookup('ds389::instance::service', 'hasrestart', $name
 
 ## Data types
 
-### <a name="ds389configitem"></a>`Ds389::ConfigItem`
+### <a name="Ds389--ConfigItem"></a>`Ds389::ConfigItem`
 
 Valid configuration item
 
-Alias of
+Alias of `Hash[String[1], Variant[Boolean,Integer[0],Float[0],String[1],Array[String[1],1]]]`
 
-```puppet
-Hash[String[1], Variant[Boolean,Integer[0],Float[0],String[1],Array[String[1],1]]]
-```
-
-### <a name="ds389configitems"></a>`Ds389::ConfigItems`
+### <a name="Ds389--ConfigItems"></a>`Ds389::ConfigItems`
 
 Valid configuration items Hash
 
-Alias of
-
-```puppet
-Hash[Pattern['^cn=.+'], Ds389::ConfigItem]
-```
+Alias of `Hash[Pattern['^cn=.+'], Ds389::ConfigItem]`
 
