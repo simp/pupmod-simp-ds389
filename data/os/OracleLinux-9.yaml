@@ -1,0 +1,10 @@
+---
+ds389::install::package_list:
+  - 389-ds-base-legacy-tools
+
+ds389::install::dnf_module: 389-ds
+ds389::install::dnf_stream: '1.4'
+#ds389::install::dnf_profile:  undef
+# There is no profile for 389-ds so just enable it and install
+# te packages needed.
+ds389::install::dnf_enable_only: true
