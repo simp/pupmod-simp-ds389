@@ -21,7 +21,6 @@ describe 'Set up 389DS' do
   end
 
   hosts_with_role(hosts, 'directory_server').each do |host|
-
     context 'with default setup' do
       it 'works with no errors' do
         apply_manifest_on(host, manifest, catch_failures: true)
@@ -36,16 +35,16 @@ describe 'Set up 389DS' do
       end
     end
 
-
     context 'create an instance' do
       let(:base_dn) { 'dc=test,dc=com' }
-      let(:rootpasswd) { 'password'}
+      let(:rootpasswd) { 'password' }
       let(:root_dn) { 'cn=Directory_Manager' }
       let(:root_dn_pwd) { on(host, "/usr/bin/pwdhash -s SHA256 #{rootpasswd}").output.strip }
-      let(:bootstrapldif) { ERB.new(File.read(File.expand_path('files/bootstrap.ldif.erb',File.dirname(__FILE__)))).result(binding) }
-      let(:ds_root_name) { 'test_in'}
+      let(:bootstrapldif) { ERB.new(File.read(File.expand_path('files/bootstrap.ldif.erb', File.dirname(__FILE__)))).result(binding) }
+      let(:ds_root_name) { 'test_in' }
 
-      let(:manifest) { <<-EOM
+      let(:manifest) do
+        <<-EOM
           ds389::instance { "#{ds_root_name}":
             base_dn                => '#{base_dn}',
             root_dn                => '#{root_dn}',
@@ -54,8 +53,7 @@ describe 'Set up 389DS' do
             enable_tls             => false
             }
       EOM
-      }
-
+      end
 
       it 'works with no errors' do
         apply_manifest_on(host, manifest, catch_failures: true)
@@ -80,7 +78,6 @@ describe 'Set up 389DS' do
       end
 
       it 'contains the entries from the ldif' do
-
         result = on(host, %(ldapsearch -x -w "#{rootpasswd}" -D "#{root_dn}" -H ldapi://%2fvar%2frun%2fslapd-#{ds_root_name}.socket -b "#{base_dn}")).output
 
         expect(result.lines.grep(%r{cn=administrators,ou=Group,#{base_dn}})).not_to be_empty
@@ -93,18 +90,18 @@ describe 'Set up 389DS' do
       it 'reports 389ds instance facts for single instance' do
         results = pfact_on(host, 'ds389__instances')
         puts "Fact ds389__instances = #{results}"
-        expect( results.to_s ).to_not be_empty
-        expect( results.keys).to eq ['test_in']
+        expect(results.to_s).not_to be_empty
+        expect(results.keys).to eq ['test_in']
 
         # check the details in the facts
         details = results['test_in']
-        expect( details['ldapifilepath'] ).to eq('/var/run/slapd-test_in.socket')
-        expect( details['ldapilisten'] ).to be true
-        expect( details['listenhost'] ).to eq('127.0.0.1')
-        expect( details['port'] ).to eq(389)
-        expect( details.key?('require-secure-binds') ).to be false
-        expect( details['rootdn'] ).to eq('cn=Directory_Manager')
-        expect( details.key?('securePort') ).to be false
+        expect(details['ldapifilepath']).to eq('/var/run/slapd-test_in.socket')
+        expect(details['ldapilisten']).to be true
+        expect(details['listenhost']).to eq('127.0.0.1')
+        expect(details['port']).to eq(389)
+        expect(details.key?('require-secure-binds')).to be false
+        expect(details['rootdn']).to eq('cn=Directory_Manager')
+        expect(details.key?('securePort')).to be false
       end
     end
 
@@ -117,7 +114,7 @@ describe 'Set up 389DS' do
       let(:ds_root_name) { 'scrap' }
       let(:hieradata) do
         {
-          'ds389::instances'                     => {
+          'ds389::instances' => {
             ds_root_name => {
               'base_dn' => 'dc=scrap test,dc=space',
               'root_dn' => 'cn=Scrap_Admin',
@@ -140,7 +137,7 @@ describe 'Set up 389DS' do
       it 'is running the dirsrv@test_in service' do
         status = YAML.safe_load(
           on(host, 'puppet resource --to_yaml service dirsrv@test_in')
-          .stdout
+          .stdout,
         )
 
         expect(status['service']['dirsrv@test_in']['ensure']).to eq('running')
@@ -155,34 +152,34 @@ describe 'Set up 389DS' do
       it 'reports 389ds instance facts for both instances' do
         results = pfact_on(host, 'ds389__instances')
         puts "Fact ds389__instances = #{results}"
-        expect( results.to_s ).to_not be_empty
-        expect( results.keys.sort ).to eq ['scrap', 'test_in']
+        expect(results.to_s).not_to be_empty
+        expect(results.keys.sort).to eq ['scrap', 'test_in']
 
         # check the details in the facts
         test_in_details = results['test_in']
-        expect( test_in_details['ldapifilepath'] ).to eq('/var/run/slapd-test_in.socket')
-        expect( test_in_details['ldapilisten'] ).to be true
-        expect( test_in_details['listenhost'] ).to eq('127.0.0.1')
-        expect( test_in_details['port'] ).to eq(389)
-        expect( test_in_details.key?('require-secure-binds') ).to be false
-        expect( test_in_details['rootdn'] ).to eq('cn=Directory_Manager')
-        expect( test_in_details.key?('securePort') ).to be false
+        expect(test_in_details['ldapifilepath']).to eq('/var/run/slapd-test_in.socket')
+        expect(test_in_details['ldapilisten']).to be true
+        expect(test_in_details['listenhost']).to eq('127.0.0.1')
+        expect(test_in_details['port']).to eq(389)
+        expect(test_in_details.key?('require-secure-binds')).to be false
+        expect(test_in_details['rootdn']).to eq('cn=Directory_Manager')
+        expect(test_in_details.key?('securePort')).to be false
 
         scrap_details = results['scrap']
-        expect( scrap_details['ldapifilepath'] ).to eq('/var/run/slapd-scrap.socket')
-        expect( scrap_details['ldapilisten'] ).to be true
-        expect( scrap_details['listenhost'] ).to eq('0.0.0.0')
-        expect( scrap_details['port'] ).to eq(388)
-        expect( scrap_details.key?('require-secure-binds') ).to be false
-        expect( scrap_details['rootdn'] ).to eq('cn=Scrap_Admin')
-        expect( scrap_details.key?('securePort') ).to be false
+        expect(scrap_details['ldapifilepath']).to eq('/var/run/slapd-scrap.socket')
+        expect(scrap_details['ldapilisten']).to be true
+        expect(scrap_details['listenhost']).to eq('0.0.0.0')
+        expect(scrap_details['port']).to eq(388)
+        expect(scrap_details.key?('require-secure-binds')).to be false
+        expect(scrap_details['rootdn']).to eq('cn=Scrap_Admin')
+        expect(scrap_details.key?('securePort')).to be false
       end
 
       it 'starts after reboot' do
         host.reboot
         status = YAML.safe_load(
           on(host, 'puppet resource --to_yaml service dirsrv@test_in')
-          .stdout
+          .stdout,
         )
 
         expect(status['service']['dirsrv@test_in']['ensure']).to eq('running')
@@ -221,7 +218,7 @@ describe 'Set up 389DS' do
       it 'reports no 389ds instance facts' do
         results = pfact_on(host, 'ds389__instances')
         puts "Fact ds389__instances = #{results}"
-        expect( results ).to be_empty
+        expect(results).to be_empty
       end
     end
   end

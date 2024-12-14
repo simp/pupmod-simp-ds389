@@ -12,16 +12,15 @@ describe '389DS with PKI' do
   hosts_with_role(hosts, 'directory_server').each do |host|
     context "ds389 class on #{host} " do
       let(:base_dn) { 'dc=tls,dc=com' }
-      let(:rootpasswd) { 'password'}
+      let(:rootpasswd) { 'password' }
       let(:root_dn) { 'cn=Directory_Manager' }
-      let(:bootstrapldif) { ERB.new(File.read(File.expand_path('files/bootstrap.ldif.erb',File.dirname(__FILE__)))).result(binding) }
+      let(:bootstrapldif) { ERB.new(File.read(File.expand_path('files/bootstrap.ldif.erb', File.dirname(__FILE__)))).result(binding) }
       let(:fqdn) {  fact_on(host, 'fqdn').strip }
-      let(:certdir) {'/etc/pki/simp-testing/pki'}
+      let(:certdir) { '/etc/pki/simp-testing/pki' }
 
       # assumes hieradata, port_starttls, port_tls, and ds_root_name are available
       # in the context
       shared_examples_for 'a TLS-enabled 389ds instance' do |host|
-
         it 'works with no errors' do
           set_hieradata_on(host, hieradata)
           apply_manifest_on(host, manifest, catch_failures: true)
@@ -56,20 +55,20 @@ describe '389DS with PKI' do
         it 'reports 389ds instance facts' do
           results = pfact_on(host, 'ds389__instances')
           puts "Fact ds389__instances = #{results}"
-          expect( results.to_s ).to_not be_empty
+          expect(results.to_s).not_to be_empty
           instance_name = hieradata['ds389::instances'].keys.first
           instance_config = hieradata['ds389::instances'][instance_name]
-          expect( results.key?(instance_name) ).to be true
+          expect(results.key?(instance_name)).to be true
 
           # spot check a few key details in the facts
-          expect( results[instance_name]['rootdn'] ).to eq(instance_config['root_dn'])
-          expect( results[instance_name]['require-secure-binds'] ).to be true
+          expect(results[instance_name]['rootdn']).to eq(instance_config['root_dn'])
+          expect(results[instance_name]['require-secure-binds']).to be true
 
           port = instance_config.key?('port') ? instance_config['port'] : 389
-          expect( results[instance_name]['port'] ).to eq(port)
+          expect(results[instance_name]['port']).to eq(port)
 
           secure_port = instance_config.key?('secure_port') ? instance_config['secure_port'] : 636
-          expect( results[instance_name]['securePort'] ).to eq(secure_port)
+          expect(results[instance_name]['securePort']).to eq(secure_port)
         end
 
         it 'unsets the environment variables for ldapsearch' do
@@ -85,7 +84,7 @@ describe '389DS with PKI' do
         let(:port_tls) { 636 }
         let(:hieradata) do
           {
-            'ds389::instances'  => {
+            'ds389::instances' => {
               ds_root_name => {
                 'base_dn'          => base_dn,
                 'root_dn'          => root_dn,
@@ -109,7 +108,7 @@ describe '389DS with PKI' do
         let(:port_tls) { 635 }
         let(:hieradata) do
           {
-            'ds389::instances'  => {
+            'ds389::instances' => {
               ds_root_name => {
                 'base_dn'          => base_dn,
                 'root_dn'          => root_dn,
@@ -129,8 +128,8 @@ describe '389DS with PKI' do
         it_behaves_like 'a TLS-enabled 389ds instance', host
 
         context 'when removing a server instance with custom ports' do
-          let(:manifest) { %Q{ds389::instance { #{ds_root_name}: ensure => "absent" }} }
-          let(:hieradata) {{ 'unused::tag' => true }}
+          let(:manifest) { %(ds389::instance { #{ds_root_name}: ensure => "absent" }) }
+          let(:hieradata) { { 'unused::tag' => true } }
 
           it 'clears the hieradata' do
             set_hieradata_on(host, hieradata)

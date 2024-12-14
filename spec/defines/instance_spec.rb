@@ -199,7 +199,7 @@ describe 'ds389::instance', type: :define do
                     'cn=config' => {
                       'nsslapd-require-secure-binds' => 'on'
                     }
-                  }
+                  },
                 )
                 .with_token(%r{^\S{32}$})
                 .with_service_group('dirsrv')
@@ -300,15 +300,15 @@ describe 'ds389::instance', type: :define do
 
               it { is_expected.to compile.with_all_deps }
               it { is_expected.to create_exec("Remove 389DS instance #{title}") }
-              it { is_expected.to_not create_ds389__instance__selinux__port('389') }
-              it { is_expected.to_not create_ds389__instance__selinux__port('636') }
+              it { is_expected.not_to create_ds389__instance__selinux__port('389') }
+              it { is_expected.not_to create_ds389__instance__selinux__port('636') }
             end
 
             context 'when instance is not in ds389__instances fact' do
               it { is_expected.to compile.with_all_deps }
               it { is_expected.to create_exec("Remove 389DS instance #{title}") }
-              it { is_expected.to_not create_ds389__instance__selinux__port('389') }
-              it { is_expected.to_not create_ds389__instance__selinux__port('636') }
+              it { is_expected.not_to create_ds389__instance__selinux__port('389') }
+              it { is_expected.not_to create_ds389__instance__selinux__port('636') }
             end
           end
 
