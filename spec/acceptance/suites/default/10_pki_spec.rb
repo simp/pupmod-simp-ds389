@@ -20,40 +20,40 @@ describe '389DS with PKI' do
 
       # assumes hieradata, port_starttls, port_tls, and ds_root_name are available
       # in the context
-      shared_examples_for 'a TLS-enabled 389ds instance' do |host|
+      shared_examples_for 'a TLS-enabled 389ds instance' do |shared_host|
         it 'works with no errors' do
-          set_hieradata_on(host, hieradata)
-          apply_manifest_on(host, manifest, catch_failures: true)
+          set_hieradata_on(shared_host, hieradata)
+          apply_manifest_on(shared_host, manifest, catch_failures: true)
         end
 
         it 'is idempotent' do
-          apply_manifest_on(host, manifest, catch_changes: true)
+          apply_manifest_on(shared_host, manifest, catch_changes: true)
         end
 
         it 'can not login to 389DS unencrypted' do
-          expect { on(host, %(ldapsearch -x -w "#{rootpasswd}" -D "#{root_dn}" -h #{fqdn} -b "cn=tasks,cn=config")) }.to raise_error(%r{.+})
+          expect { on(shared_host, %(ldapsearch -x -w "#{rootpasswd}" -D "#{root_dn}" -h #{fqdn} -b "cn=tasks,cn=config")) }.to raise_error(%r{.+})
         end
 
         it 'sets the environment variables for ldapsearch' do
-          host.add_env_var('LDAPTLS_CACERT', "#{certdir}/cacerts/cacerts.pem")
-          host.add_env_var('LDAPTLS_KEY', "#{certdir}/private/#{fqdn}.pem")
-          host.add_env_var('LDAPTLS_CERT', "#{certdir}/public/#{fqdn}.pub")
+          shared_host.add_env_var('LDAPTLS_CACERT', "#{certdir}/cacerts/cacerts.pem")
+          shared_host.add_env_var('LDAPTLS_KEY', "#{certdir}/private/#{fqdn}.pem")
+          shared_host.add_env_var('LDAPTLS_CERT', "#{certdir}/public/#{fqdn}.pub")
         end
 
         it 'can login to 389DS using STARTTLS' do
-          on(host, %(ldapsearch -ZZ -x -w "#{rootpasswd}" -D "#{root_dn}" -H ldap://#{fqdn}:#{port_starttls} -b "cn=tasks,cn=config"))
+          on(shared_host, %(ldapsearch -ZZ -x -w "#{rootpasswd}" -D "#{root_dn}" -H ldap://#{fqdn}:#{port_starttls} -b "cn=tasks,cn=config"))
         end
 
         it 'can login to 389DS using LDAPS' do
-          on(host, %(ldapsearch -x -w "#{rootpasswd}" -D "#{root_dn}" -H ldaps://#{fqdn}:#{port_tls} -b "cn=tasks,cn=config"))
+          on(shared_host, %(ldapsearch -x -w "#{rootpasswd}" -D "#{root_dn}" -H ldaps://#{fqdn}:#{port_tls} -b "cn=tasks,cn=config"))
         end
 
         it 'can login to 389DS via LDAPI' do
-          on(host, %(ldapsearch -x -w "#{rootpasswd}" -D "#{root_dn}" -H ldapi://%2fvar%2frun%2fslapd-#{ds_root_name}.socket -b "cn=tasks,cn=config"))
+          on(shared_host, %(ldapsearch -x -w "#{rootpasswd}" -D "#{root_dn}" -H ldapi://%2fvar%2frun%2fslapd-#{ds_root_name}.socket -b "cn=tasks,cn=config"))
         end
 
         it 'reports 389ds instance facts' do
-          results = pfact_on(host, 'ds389__instances')
+          results = pfact_on(shared_host, 'ds389__instances')
           puts "Fact ds389__instances = #{results}"
           expect(results.to_s).not_to be_empty
           instance_name = hieradata['ds389::instances'].keys.first
@@ -72,9 +72,9 @@ describe '389DS with PKI' do
         end
 
         it 'unsets the environment variables for ldapsearch' do
-          host.clear_env_var('LDAPTLS_CERT')
-          host.clear_env_var('LDAPTLS_KEY')
-          host.clear_env_var('LDAPTLS_CACERT')
+          shared_host.clear_env_var('LDAPTLS_CERT')
+          shared_host.clear_env_var('LDAPTLS_KEY')
+          shared_host.clear_env_var('LDAPTLS_CACERT')
         end
       end
 

@@ -49,7 +49,7 @@ describe 'ds389::instance', type: :define do
           it { is_expected.to compile.with_all_deps }
 
           it {
-            expect(subject).to create_file("/usr/share/puppet_ds389_config/#{title}_ds_setup.inf")
+            is_expected.to create_file("/usr/share/puppet_ds389_config/#{title}_ds_setup.inf")
               .with_owner('root')
               .with_group('root')
               .with_mode('0600')
@@ -102,7 +102,7 @@ describe 'ds389::instance', type: :define do
           }
 
           it {
-            expect(subject).to create_exec("Setup #{title} DS")
+            is_expected.to create_exec("Setup #{title} DS")
               .with_command("/sbin/setup-ds.pl --silent -f /usr/share/puppet_ds389_config/#{title}_ds_setup.inf && touch '/etc/dirsrv/slapd-#{title}/.puppet_bootstrapped'")
               .with_creates("/etc/dirsrv/slapd-#{title}/.puppet_bootstrapped")
               .that_requires("File[/usr/share/puppet_ds389_config/#{title}_ds_setup.inf]")
@@ -110,7 +110,7 @@ describe 'ds389::instance', type: :define do
           }
 
           it {
-            expect(subject).to create_file('/usr/share/puppet_ds389_config')
+            is_expected.to create_file('/usr/share/puppet_ds389_config')
               .with_ensure('directory')
               .with_owner('root')
               .with_group('dirsrv')
@@ -118,7 +118,7 @@ describe 'ds389::instance', type: :define do
           }
 
           it {
-            expect(subject).to create_file("/usr/share/puppet_ds389_config/#{title}_ds_pw.txt")
+            is_expected.to create_file("/usr/share/puppet_ds389_config/#{title}_ds_pw.txt")
               .with_ensure('present')
               .with_owner('root')
               .with_group('root')
@@ -127,18 +127,18 @@ describe 'ds389::instance', type: :define do
           }
 
           it {
-            expect(subject).to create_file("/usr/share/puppet_ds389_config/#{title}_ds_pw.txt").with_content(%r{^(.+){8,}$})
+            is_expected.to create_file("/usr/share/puppet_ds389_config/#{title}_ds_pw.txt").with_content(%r{^(.+){8,}$})
           }
 
           it {
-            expect(subject).to create_service("dirsrv@#{title}")
+            is_expected.to create_service("dirsrv@#{title}")
               .with_ensure('running')
               .with_enable(true)
               .with_hasrestart(true)
           }
 
           it {
-            expect(subject).to create_ds389__instance__attr__set("Configure LDAPI for #{title}")
+            is_expected.to create_ds389__instance__attr__set("Configure LDAPI for #{title}")
               .with_instance_name(title)
               .with_root_dn('cn=Directory_Manager')
               .with_host('127.0.0.1')
@@ -156,7 +156,7 @@ describe 'ds389::instance', type: :define do
           }
 
           it {
-            expect(subject).to create_ds389__instance__attr__set("Core configuration for #{title}")
+            is_expected.to create_ds389__instance__attr__set("Core configuration for #{title}")
               .with_instance_name(title)
               .with_root_dn('cn=Directory_Manager')
               .with_force_ldapi(true)
@@ -185,7 +185,7 @@ describe 'ds389::instance', type: :define do
             it { is_expected.to compile.with_all_deps }
 
             it {
-              expect(subject).to create_ds389__instance__tls(title)
+              is_expected.to create_ds389__instance__tls(title)
                 .with_root_dn('cn=Directory_Manager')
                 .with_root_pw_file('/usr/share/puppet_ds389_config/test_ds_pw.txt')
                 .with_service_group('dirsrv')
@@ -218,7 +218,7 @@ describe 'ds389::instance', type: :define do
             it { is_expected.to compile.with_all_deps }
 
             it {
-              expect(subject).to create_file("/usr/share/puppet_ds389_config/#{title}_ds_bootstrap.ldif")
+              is_expected.to create_file("/usr/share/puppet_ds389_config/#{title}_ds_bootstrap.ldif")
                 .with_content(sensitive(params[:bootstrap_ldif_content]))
                 .that_notifies("Exec[Setup #{title} DS]")
             }

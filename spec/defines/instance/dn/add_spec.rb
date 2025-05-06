@@ -38,7 +38,7 @@ describe 'ds389::instance::dn::add', type: :define do
         it { is_expected.to compile.with_all_deps }
 
         it do
-          expect(subject).to create_file(target_file)
+          is_expected.to create_file(target_file)
             .with_owner('root')
             .with_group('root')
             .with_mode('0400')
@@ -56,7 +56,7 @@ describe 'ds389::instance::dn::add', type: :define do
             )
             .that_notifies("Exec[#{target_file}]")
 
-          expect(subject).to create_exec(target_file)
+          is_expected.to create_exec(target_file)
             .with_command(
               %(ldapadd -x -D '#{params[:root_dn]}' -y '#{params[:root_pw_file]}' -H ldap://127.0.0.1:389 -f '#{target_file}'),
             )
@@ -86,7 +86,7 @@ describe 'ds389::instance::dn::add', type: :define do
           it { is_expected.to create_ds389__instance__service(params[:instance_name]) }
 
           it {
-            expect(subject).to create_exec("Restart #{params[:instance_name]}")
+            is_expected.to create_exec("Restart #{params[:instance_name]}")
               .with_command("/sbin/restart-dirsrv #{params[:instance_name]}")
               .with_refreshonly(true)
               .that_requires("Exec[#{target_file}]")
