@@ -27,7 +27,7 @@ describe 'ds389::instance::attr::set', type: :define do
         it { is_expected.to compile.with_all_deps }
 
         it {
-          expect(subject).to create_exec("Set cn=config,#{params[:key]} on #{params[:instance_name]}")
+          is_expected.to create_exec("Set cn=config,#{params[:key]} on #{params[:instance_name]}")
             .with_command(
               sensitive(
                 # rubocop:disable Layout/LineLength
@@ -64,7 +64,7 @@ describe 'ds389::instance::attr::set', type: :define do
           it { is_expected.to create_ds389__instance__service(params[:instance_name]) }
 
           it {
-            expect(subject).to create_exec("Restart #{params[:instance_name]}")
+            is_expected.to create_exec("Restart #{params[:instance_name]}")
               .with_command("/sbin/restart-dirsrv #{params[:instance_name]}")
               .with_refreshonly(true)
               .that_requires("Exec[Set cn=config,#{params[:key]} on #{params[:instance_name]}]")

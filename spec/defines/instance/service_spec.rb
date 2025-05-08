@@ -25,7 +25,7 @@ describe 'ds389::instance::service', type: :define do
         it { is_expected.to compile.with_all_deps }
 
         it do
-          expect(subject).to create_service("dirsrv@#{title}")
+          is_expected.to create_service("dirsrv@#{title}")
             .with_ensure('running')
             .with_enable(true)
             .with_hasrestart(true)

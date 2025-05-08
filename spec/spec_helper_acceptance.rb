@@ -45,16 +45,14 @@ RSpec.configure do |c|
 
   # Configure all nodes in nodeset
   c.before :suite do
-    begin
-      # Install modules and dependencies from spec/fixtures/modules
-      copy_fixture_modules_to(hosts)
-    rescue StandardError, ScriptError => e
-      raise e unless ENV['PRY']
+    # Install modules and dependencies from spec/fixtures/modules
+    copy_fixture_modules_to(hosts)
+  rescue StandardError, ScriptError => e
+    raise e unless ENV['PRY']
 
-      # rubocop:disable Lint/Debugger
-      require 'pry'
-      binding.pry
-      # rubocop:enable Lint/Debugger
-    end
+    # rubocop:disable Lint/Debugger
+    require 'pry'
+    binding.pry
+    # rubocop:enable Lint/Debugger
   end
 end

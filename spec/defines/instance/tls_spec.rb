@@ -7,7 +7,7 @@ describe 'ds389::instance::tls', type: :define do
     on_supported_os.each do |os, os_facts|
       context "with #{os}" do
         let(:facts) do
-          os_facts.merge({ :selinux_enforced => true })
+          os_facts.merge({ selinux_enforced: true })
         end
 
         let(:title) do
@@ -15,7 +15,7 @@ describe 'ds389::instance::tls', type: :define do
         end
 
         let(:instance_base) do
-            "/etc/dirsrv/slapd-#{title}"
+          "/etc/dirsrv/slapd-#{title}"
         end
 
         let(:p12file) do
@@ -48,17 +48,17 @@ describe 'ds389::instance::tls', type: :define do
           end
 
           it { is_expected.to compile.with_all_deps }
-          it { is_expected.to_not create_ds389__instance__selinux__port('636') }
-          it { is_expected.to_not create_ds389__instance__attr__set("Do not require encryption for #{title}") }
-          it { is_expected.to_not create_file(pin_file) }
-          it { is_expected.to_not create_file(token_file) }
-          it { is_expected.to_not create_pki__copy("ds389_#{title}") }
-          it { is_expected.to_not create_exec("Validate #{title} p12") }
-          it { is_expected.to_not create_exec("Build #{title} p12") }
-          it { is_expected.to_not create_exec("Import #{title} p12") }
-          it { is_expected.to_not create_exec("Import #{title} CAs") }
-          it { is_expected.to_not create_ds389__instance__dn__add("RSA DN for #{title}") }
-          it { is_expected.to_not create_ds389__instance__attr__set("Configure PKI for #{title}") }
+          it { is_expected.not_to create_ds389__instance__selinux__port('636') }
+          it { is_expected.not_to create_ds389__instance__attr__set("Do not require encryption for #{title}") }
+          it { is_expected.not_to create_file(pin_file) }
+          it { is_expected.not_to create_file(token_file) }
+          it { is_expected.not_to create_pki__copy("ds389_#{title}") }
+          it { is_expected.not_to create_exec("Validate #{title} p12") }
+          it { is_expected.not_to create_exec("Build #{title} p12") }
+          it { is_expected.not_to create_exec("Import #{title} p12") }
+          it { is_expected.not_to create_exec("Import #{title} CAs") }
+          it { is_expected.not_to create_ds389__instance__dn__add("RSA DN for #{title}") }
+          it { is_expected.not_to create_ds389__instance__attr__set("Configure PKI for #{title}") }
         end
 
         context 'with SIMP PKI' do
@@ -82,13 +82,13 @@ describe 'ds389::instance::tls', type: :define do
               .with_default(636)
           end
 
-          it { is_expected.to_not create_ds389__instance__attr__set("Do not require encryption for #{title}") }
+          it { is_expected.not_to create_ds389__instance__attr__set("Do not require encryption for #{title}") }
 
           it do
             is_expected.to create_file(pin_file)
-            .with_group('dirsrv')
-            .with_mode('0600')
-            .with_content(sensitive("Internal (Software) Token:#{params[:token]}\n"))
+              .with_group('dirsrv')
+              .with_mode('0600')
+              .with_content(sensitive("Internal (Software) Token:#{params[:token]}\n"))
           end
 
           it do
@@ -98,7 +98,7 @@ describe 'ds389::instance::tls', type: :define do
           end
 
           it do
-            expect(subject).to create_pki__copy("ds389_#{title}")
+            is_expected.to create_pki__copy("ds389_#{title}")
               .with_source(%r{/etc/pki})
               .with_pki(params[:ensure])
               .with_group('root')
@@ -106,7 +106,7 @@ describe 'ds389::instance::tls', type: :define do
           end
 
           it do
-            expect(subject).to create_exec("Validate #{title} p12")
+            is_expected.to create_exec("Validate #{title} p12")
               .with_command("rm -f #{p12file}")
               .with_unless("openssl pkcs12 -nokeys -in #{p12file} -passin file:#{token_file}")
               .with_path(['/bin', '/usr/bin'])
@@ -114,7 +114,7 @@ describe 'ds389::instance::tls', type: :define do
           end
 
           it do
-            expect(subject).to create_exec("Build #{title} p12")
+            is_expected.to create_exec("Build #{title} p12")
               .with_command("openssl pkcs12 -export -name 'Server-Cert' -out #{p12file} -in #{params[:key]} -certfile #{params[:cert]} -passout file:#{token_file}")
               .with_refreshonly(true)
               .with_path(['/bin', '/usr/bin'])
@@ -122,14 +122,14 @@ describe 'ds389::instance::tls', type: :define do
           end
 
           it do
-            expect(subject).to create_exec("Import #{title} p12")
+            is_expected.to create_exec("Import #{title} p12")
               .with_command("certutil -D -d #{instance_base} -n 'Server-Cert' ||:; pk12util -i #{p12file} -d #{instance_base} -w #{token_file} -k #{token_file} -n 'Server-Cert'")
               .with_path(['/bin', '/usr/bin'])
               .that_subscribes_to("File[#{token_file}]")
           end
 
           it do
-            expect(subject).to create_exec("Import #{title} CAs")
+            is_expected.to create_exec("Import #{title} CAs")
               .with_command("/usr/share/puppet_ds389_config/ca_import.sh -i '#{params[:cafile]}' -o '#{instance_base}'")
               .with_onlyif("/usr/share/puppet_ds389_config/ca_import.sh -i '#{params[:cafile]}' -o '#{instance_base}' -c; [ $? -eq 2 ]")
               .with_path(['/bin', '/usr/bin'])
@@ -139,7 +139,7 @@ describe 'ds389::instance::tls', type: :define do
           it { is_expected.to create_ds389__instance__dn__add("RSA DN for #{title}").with_force_ldapi(true) }
 
           it do
-            expect(subject).to create_ds389__instance__attr__set("Configure PKI for #{title}")
+            is_expected.to create_ds389__instance__attr__set("Configure PKI for #{title}")
               .with_force_ldapi(true)
               .with_restart_instance(true)
               .that_requires("Ds389::Instance::Dn::Add[RSA DN for #{title}]")
@@ -193,7 +193,7 @@ describe 'ds389::instance::tls', type: :define do
           it { is_expected.to create_file(token_file) }
 
           it do
-            expect(subject).to create_pki__copy("ds389_#{title}")
+            is_expected.to create_pki__copy("ds389_#{title}")
               .with_source(%r{/etc/pki})
               .with_pki(params[:ensure])
               .with_group('root')
@@ -213,25 +213,24 @@ describe 'ds389::instance::tls', type: :define do
             {
               root_dn: 'dn=thing',
               root_pw_file: '/some/seekrit/file.skrt',
-              :ensure => 'disabled'
+              ensure: 'disabled'
             }
           end
 
           context 'when 389ds instance available in facts' do
-
-              let(:facts) do
-                os_facts.merge(
-                  {
-                    selinux_enforced: true,
-                    ds389__instances: {
-                      title => {
-                        'port'       => 389,
-                        'securePort' => 636
-                      }
+            let(:facts) do
+              os_facts.merge(
+                {
+                  selinux_enforced: true,
+                  ds389__instances: {
+                    title => {
+                      'port'       => 389,
+                      'securePort' => 636
                     }
                   }
-                )
-              end
+                },
+              )
+            end
 
             it { is_expected.to compile.with_all_deps }
             it do
@@ -241,7 +240,7 @@ describe 'ds389::instance::tls', type: :define do
             end
 
             it do
-              expect(subject).to create_ds389__instance__attr__set("Do not require encryption for #{title}")
+              is_expected.to create_ds389__instance__attr__set("Do not require encryption for #{title}")
                 .with_instance_name(title)
                 .with_root_dn(params[:root_dn])
                 .with_root_pw_file(params[:root_pw_file])
@@ -250,20 +249,20 @@ describe 'ds389::instance::tls', type: :define do
                 .with_value('0')
             end
 
-            it { is_expected.to_not create_file(pin_file) }
-            it { is_expected.to_not create_file(token_file) }
-            it { is_expected.to_not create_pki__copy("ds389_#{title}") }
-            it { is_expected.to_not create_exec("Validate #{title} p12") }
-            it { is_expected.to_not create_exec("Build #{title} p12") }
-            it { is_expected.to_not create_exec("Import #{title} p12") }
-            it { is_expected.to_not create_exec("Import #{title} CAs") }
-            it { is_expected.to_not create_ds389__instance__dn__add("RSA DN for #{title}") }
-            it { is_expected.to_not create_ds389__instance__attr__set("Configure PKI for #{title}") }
+            it { is_expected.not_to create_file(pin_file) }
+            it { is_expected.not_to create_file(token_file) }
+            it { is_expected.not_to create_pki__copy("ds389_#{title}") }
+            it { is_expected.not_to create_exec("Validate #{title} p12") }
+            it { is_expected.not_to create_exec("Build #{title} p12") }
+            it { is_expected.not_to create_exec("Import #{title} p12") }
+            it { is_expected.not_to create_exec("Import #{title} CAs") }
+            it { is_expected.not_to create_ds389__instance__dn__add("RSA DN for #{title}") }
+            it { is_expected.not_to create_ds389__instance__attr__set("Configure PKI for #{title}") }
           end
 
           context 'when 389ds instance not available in facts' do
             it { is_expected.to compile.with_all_deps }
-            it { is_expected.to_not create_ds389__instance__selinux__port('636') }
+            it { is_expected.not_to create_ds389__instance__selinux__port('636') }
             it { is_expected.to create_ds389__instance__attr__set("Do not require encryption for #{title}") }
           end
         end
@@ -288,14 +287,14 @@ describe 'ds389::instance::tls', type: :define do
                   selinux_enforced: true,
                   ds389__instances: {
                     'conflicting_port' => {
-                    'port'       => 636,
+                      'port' => 636,
                     },
                     title => {
                       'port'       => 389,
                       'securePort' => 636
                     }
                   }
-                }
+                },
               )
             end
 
@@ -311,14 +310,14 @@ describe 'ds389::instance::tls', type: :define do
                   selinux_enforced: true,
                   ds389__instances: {
                     'conflicting_secure_port' => {
-                    'securePort'       => 636,
+                      'securePort' => 636,
                     },
                     title => {
                       'port'       => 389,
                       'securePort' => 636
                     }
                   }
-                }
+                },
               )
             end
 

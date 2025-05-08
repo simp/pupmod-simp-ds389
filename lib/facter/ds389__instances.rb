@@ -60,7 +60,7 @@ Facter.add('ds389__instances') do
     end
 
     Dir.glob(File.join(confdir, 'slapd-*')) do |slapd_svr|
-      next if slapd_svr =~ %r{\.removed$}
+      next if %r{\.removed$}.match?(slapd_svr)
 
       slapd_svr_conf = File.join(slapd_svr, 'dse.ldif')
 
@@ -110,7 +110,7 @@ Facter.add('ds389__instances') do
             value = true
           elsif ['off', 'false'].include?(value)
             value = false
-          elsif value =~ %r{^\d+$}
+          elsif %r{^\d+$}.match?(value)
             value = value.to_i
           end
 
