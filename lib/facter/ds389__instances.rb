@@ -120,7 +120,7 @@ Facter.add('ds389__instances') do
 
         # Fixup troublesome items
         if instances[instance_name]['ldapilisten']
-          instances[instance_name]['ldapilisten'] = File.exist?((instances[instance_name]['ldapifilepath']).to_s)
+          instances[instance_name]['ldapilisten'] = File.exist?(instances[instance_name]['ldapifilepath'].to_s)
         end
 
         if instances[instance_name]['require-secure-binds'] && !instances[instance_name].key?('securePort')
