@@ -1,28 +1,22 @@
 ---
 HOSTS:
-  el7:
+  el10:
     roles:
     - directory_server
     - default
-    platform: el-7-x86_64
-    box: centos/7
+    - el10
+    platform: el-10-x86_64
+    box: almalinux/10
     hypervisor: "<%= ENV.fetch('BEAKER_HYPERVISOR', 'vagrant') %>"
-    family: centos-cloud/centos-7
-    gce_machine_type: n1-standard-2
-  el8:
-    roles:
-    - directory_server
-    platform: el-8-x86_64
-    box: generic/centos8
-    hypervisor: "<%= ENV.fetch('BEAKER_HYPERVISOR', 'vagrant') %>"
-    family: centos-cloud/centos-stream-8
-    gce_machine_type: n1-standard-2
+    vagrant_memsize: 2048
+    vagrant_cpus: 2
+    # There are not currently any el10 images available on google cloud
+    # family: almalinux-cloud/almalinux-10
+    # gce_machine_type: n1-standard-2
 CONFIG:
   log_level: verbose
   type: aio
-  vagrant_memsize: 1024
-  vagrant_cpus: 2
-  puppet_collection: "<%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'puppet7') %>"
+  puppet_collection: "<%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'openvox8') %>"
   ssh:
     keepalive: true
     keepalive_interval: 10
