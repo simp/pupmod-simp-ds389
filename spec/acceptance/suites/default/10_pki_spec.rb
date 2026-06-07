@@ -54,7 +54,7 @@ describe '389DS with PKI' do
 
         it 'reports 389ds instance facts' do
           results = pfact_on(shared_host, 'ds389__instances')
-          puts "Fact ds389__instances = #{results}"
+          puts "Fact ds389__instances = #{results}" # rubocop:disable RSpec/Output
           expect(results.to_s).not_to be_empty
           instance_name = hieradata['ds389::instances'].keys.first
           instance_config = hieradata['ds389::instances'][instance_name]

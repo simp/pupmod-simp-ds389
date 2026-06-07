@@ -89,7 +89,7 @@ describe 'Set up 389DS' do
 
       it 'reports 389ds instance facts for single instance' do
         results = pfact_on(host, 'ds389__instances')
-        puts "Fact ds389__instances = #{results}"
+        puts "Fact ds389__instances = #{results}" # rubocop:disable RSpec/Output
         expect(results.to_s).not_to be_empty
         expect(results.keys).to eq ['test_in']
 
@@ -151,7 +151,7 @@ describe 'Set up 389DS' do
 
       it 'reports 389ds instance facts for both instances' do
         results = pfact_on(host, 'ds389__instances')
-        puts "Fact ds389__instances = #{results}"
+        puts "Fact ds389__instances = #{results}" # rubocop:disable RSpec/Output
         expect(results.to_s).not_to be_empty
         expect(results.keys.sort).to eq ['scrap', 'test_in']
 
@@ -217,7 +217,7 @@ describe 'Set up 389DS' do
 
       it 'reports no 389ds instance facts' do
         results = pfact_on(host, 'ds389__instances')
-        puts "Fact ds389__instances = #{results}"
+        puts "Fact ds389__instances = #{results}" # rubocop:disable RSpec/Output
         expect(results).to be_empty
       end
     end
