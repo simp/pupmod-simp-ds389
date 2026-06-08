@@ -8,21 +8,11 @@
 #
 # ==============================================================================
 #
-# The testing matrix considers ruby/puppet versions supported by SIMP and PE:
-# ------------------------------------------------------------------------------
-# Release       Puppet   Ruby    EOL
-# PE 2019.8     6.22     2.5     2022-12 (LTS)
-# PE 2021.Y     7.x      2.7     Quarterly updates
-#
-# https://puppet.com/docs/pe/latest/component_versions_in_recent_pe_releases.html
-# https://puppet.com/misc/puppet-enterprise-lifecycle
-# ==============================================================================
-#
 # https://docs.github.com/en/actions/reference/events-that-trigger-workflows
 #
-
+---
 name: PR Tests
-on:
+'on':
   pull_request:
     types: [opened, reopened, synchronize]
 
@@ -105,10 +95,6 @@ jobs:
     strategy:
       matrix:
         puppet:
-          - label: 'Puppet 7.x [SIMP 6.6/PE 2021.7]'
-            puppet_version: '~> 7.0'
-            ruby_version: '2.7'
-            experimental: false
           - label: 'Puppet 8.x'
             puppet_version: '~> 8.0'
             ruby_version: '3.2'
@@ -124,7 +110,7 @@ jobs:
           ruby-version: ${{matrix.puppet.ruby_version}}
           bundler-cache: true
       - run: 'command -v rpm || if command -v apt-get; then sudo apt-get update; sudo apt-get install -y rpm; fi ||:'
-      - run: 'bundle exec rake spec'
+      - run: 'bundle exec rake parallel_spec'
         continue-on-error: ${{matrix.puppet.experimental}}
 
   acceptance:

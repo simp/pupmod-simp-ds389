@@ -1,12 +1,12 @@
 {
   "name": "simp-ds389",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "SIMP Team",
   "summary": "Management of 389 Directory Server",
   "license": "Apache-2.0",
   "source": "https://github.com/simp/pupmod-simp-ds389",
   "project_page": "https://github.com/simp/pupmod-simp-ds389",
-  "issues_url": "https://simp-project.atlassian.net",
+  "issues_url": "https://github.com/simp/pupmod-simp-ds389/issues",
   "dependencies": [
     {
       "name": "puppet/systemd",
@@ -14,7 +14,7 @@
     },
     {
       "name": "simp/simplib",
-      "version_requirement": ">= 4.9.0 < 5.0.0"
+      "version_requirement": ">= 4.9.0 < 6.0.0"
     },
     {
       "name": "puppetlabs/stdlib",
@@ -25,11 +25,11 @@
     "optional_dependencies": [
       {
         "name": "simp/pki",
-        "version_requirement": ">= 6.2.0 < 7.0.0"
+        "version_requirement": ">= 6.2.0 < 8.0.0"
       },
       {
         "name": "simp/selinux",
-        "version_requirement": ">= 2.6.1 < 4.0.0"
+        "version_requirement": ">= 2.6.1 < 5.0.0"
       },
       {
         "name": "simp/vox_selinux",
@@ -37,7 +37,7 @@
       },
       {
         "name": "puppet/selinux",
-        "version_requirement": ">= 1.6.1 < 6.0.0"
+        "version_requirement": ">= 1.6.1 < 5.0.0"
       }
     ]
   },
@@ -50,7 +50,7 @@
       ]
     },
     {
-      "operatingsystem": "OracleLinux",
+      "operatingsystem": "RedHat",
       "operatingsystemrelease": [
         "8",
         "9",
@@ -58,7 +58,7 @@
       ]
     },
     {
-      "operatingsystem": "RedHat",
+      "operatingsystem": "OracleLinux",
       "operatingsystemrelease": [
         "8",
         "9",
@@ -84,8 +84,8 @@
   ],
   "requirements": [
     {
-      "name": "puppet",
-      "version_requirement": ">= 7.0.0 < 9.0.0"
+      "name": "openvox",
+      "version_requirement": ">= 8.0.0 < 9.0.0"
     }
   ],
   "pdk-version": "1.18.0",
