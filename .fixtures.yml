@@ -22,5 +22,3 @@ fixtures:
     concat: https://github.com/simp/puppetlabs-concat.git
     augeasproviders_ssh: https://github.com/simp/augeasproviders_ssh.git
     ssh: https://github.com/simp/pupmod-simp-ssh.git
-  symlinks:
-    ds389: "#{source_dir}"
