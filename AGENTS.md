@@ -24,7 +24,7 @@ can be declared directly without first classifying `ds389`.
 
 ## Business logic
 
-### `class ds389` (`manifests/init.pp:21`)
+### `class ds389` (`manifests/init.pp`)
 
 Public entry class (not `assert_private()`'d). Parameters: `$config_dir`
 (`Stdlib::Absolutepath`, default `/usr/share/puppet_ds389_config`),
@@ -33,34 +33,34 @@ Public entry class (not `assert_private()`'d). Parameters: `$config_dir`
 `$package_ensure` (`String`, default `installed`).
 
 - **The class is deliberately kept inert.** An explicit warning
-  (`init.pp:28-29`) says it is included by several defined types, so do **not**
+  (`init.pp`) says it is included by several defined types, so do **not**
   add resources here that apply without being disabled by default.
-- `include ds389::install` (`init.pp:31`).
+- `include ds389::install` (`init.pp`).
 - Creates `$config_dir` and `$ldif_working_dir` as directories, `owner root`,
   `group $service_group`, mode `u+rwx,g+x,o-rwx`, with **`purge => true,
-  recurse => true`** (`init.pp:33-44`) — Puppet will delete unmanaged files in
+  recurse => true`** (`init.pp`) — Puppet will delete unmanaged files in
   those directories.
 - Creates `${config_dir}/ca_import.sh` mode `0700` from the `ca_import.sh.epp`
-  template (`init.pp:46-52`).
+  template (`init.pp`).
 - Iterates `$instances`, declaring a `ds389::instance` per entry
-  (`init.pp:54-59`).
+  (`init.pp`).
 
-### `class ds389::install` (`manifests/install.pp:30`)
+### `class ds389::install` (`manifests/install.pp`)
 
-`assert_private()` (`install.pp:40`). Installs the 389DS packages two ways and
-**fails unless `$package_list` or `$dnf_module` is set** (`install.pp:42-44`):
+`assert_private()` (`install.pp`). Installs the 389DS packages two ways and
+**fails unless `$package_list` or `$dnf_module` is set** (`install.pp`):
 
 - `$dnf_module` path (EL8): declares a `package` with `provider => 'dnfmodule'`,
   `ensure => $dnf_stream`, `enable_only => $dnf_enable_only`, `flavor =>
-  $dnf_profile` (`install.pp:46-53`). Selected via module data on EL8.
+  $dnf_profile` (`install.pp`). Selected via module data on EL8.
 - `$package_list` path (EL9/10): `stdlib::ensure_packages($package_list, {
-  'ensure' => $ds389::package_ensure })` (`install.pp:55-57`).
+  'ensure' => $ds389::package_ensure })` (`install.pp`).
 
 Also holds the command paths used by the instance defines: `$setup_command`
 (`/usr/sbin/dscreate`), `$remove_command` (`/usr/sbin/dsctl`), `$dsconf_command`
 (`/usr/sbin/dsconf`).
 
-### `define ds389::instance` (`manifests/instance.pp:85`)
+### `define ds389::instance` (`manifests/instance.pp`)
 
 Public define — the primary interface. Builds/removes a single 389DS instance
 keyed on `$title`. Key parameters: `$ensure` (`Enum['present','absent']`,
@@ -74,18 +74,18 @@ FQDN), `$bootstrap_ldif_content`, `$ds_setup_ini_content`, `$general_config`
 default `false`), `$self_sign_cert` (`Enum['True','False']`, default `'False'`),
 `$tls_params` (dlookup).
 
-- **Strict title validation** (`instance.pp:107-118`): `$title` must match a
+- **Strict title validation** (`instance.pp`): `$title` must match a
   systemd-safe pattern, must **not** start with `dirsrv@` or `slapd-`, must not
   be `admin`, and must not end with `.removed`.
-- `include ds389` (`instance.pp:121`) to propagate the top-level params.
-- **`ensure => present`** (`instance.pp:125-282`):
+- `include ds389` (`instance.pp`) to propagate the top-level params.
+- **`ensure => present`** (`instance.pp`):
   - Requires `$base_dn` and `$root_dn` (`126-127`).
   - **Port-conflict checks**: against the `ds389__instances` fact
     (`130-136`) and against other `Ds389::Instance` resources in the catalog via
     `defined_with_params` (`138-140`).
   - Generates the root DN password when none is given:
     `simplib::passgen("389-ds-${safe}", { 'length' => 64, 'complexity' => 0 })`
-    (`instance.pp:148`); `$safe = simplib::safe_filename($title)` (`142`).
+    (`instance.pp`); `$safe = simplib::safe_filename($title)` (`142`).
   - Renders the `dscreate` setup INF from `setup.ini.epp` (or uses
     `$ds_setup_ini_content`); optionally writes a bootstrap LDIF (mode `0640`,
     `Sensitive`) first (`151-185`). Writes the INF to
@@ -107,10 +107,10 @@ default `false`), `$self_sign_cert` (`Enum['True','False']`, default `'False'`),
     `nsslapd-listenhost`/`nsslapd-securelistenhost` with `$general_config` and
     `$password_policy`, `force_ldapi=true` (`257-269`).
   - If `$enable_tls`, declares `ds389::instance::tls { $title }` (`271-281`).
-- **`ensure => absent`** (`instance.pp:283-310`): runs the `dsctl ... remove`
+- **`ensure => absent`** (`instance.pp`): runs the `dsctl ... remove`
   command (guarded by `onlyif`) and disables the SELinux ports.
 
-### `define ds389::instance::attr::set` (`manifests/instance/attr/set.pp:71`)
+### `define ds389::instance::attr::set` (`manifests/instance/attr/set.pp`)
 
 Public define — used directly to tweak `cn=config` attributes. Takes either a
 single `$key`/`$value` or an `$attrs` hash (mutually exclusive). Targets the
@@ -121,25 +121,25 @@ replace key=value` guarded by an `unless` `dsconf ... config get | grep`
 (`142-150`). Restarts the instance (`dsctl <name> restart`, `refreshonly`) when
 `$restart_instance` is true **or** the key is in
 `lookup('ds389::config::attributes_requiring_restart', …)` (`152-169`).
-A `# This should be a provider` comment (`set.pp:145`) marks this exec approach
+A `# This should be a provider` comment (`set.pp`) marks this exec approach
 as acknowledged tech debt.
 
-### `define ds389::instance::service` (`manifests/instance/service.pp:14`)
+### `define ds389::instance::service` (`manifests/instance/service.pp`)
 
-`assert_private()` (`service.pp:19`). Ensures the `dirsrv.target`, installs a
+`assert_private()` (`service.pp`). Ensures the `dirsrv.target`, installs a
 systemd drop-in `00_dirsrv_<name>_loglevel.conf` setting `LogLevelMax=warning`,
 and manages the `dirsrv@<name>` service. `$ensure`/`$enable`/`$hasrestart` all
 come from `simplib::dlookup` (per-`$name`).
 
-### `define ds389::instance::selinux::port` (`manifests/instance/selinux/port.pp:14`)
+### `define ds389::instance::selinux::port` (`manifests/instance/selinux/port.pp`)
 
-`assert_private()` (`port.pp:19`). Declares `selinux_port { "tcp_<p>-<p>":
+`assert_private()` (`port.pp`). Declares `selinux_port { "tcp_<p>-<p>":
 seltype => 'ldap_port_t' }` **only** when the port differs from the `$default`
-(389) **and** SELinux is enforcing (`port.pp:23`).
+(389) **and** SELinux is enforcing (`port.pp`).
 
-### `define ds389::instance::tls` (`manifests/instance/tls.pp:53`)
+### `define ds389::instance::tls` (`manifests/instance/tls.pp`)
 
-`assert_private()` (`tls.pp:66`). Configures TLS for an instance: enforces
+`assert_private()` (`tls.pp`). Configures TLS for an instance: enforces
 `nsslapd-security=on`, `nsslapd-securePort`, and (by default)
 `nsslapd-minssf=128`, `nsslapd-SSLclientAuth=allowed`,
 `nsslapd-ssl-check-hostname=on`, `nsslapd-validate-cert=on`. Manages the NSS
@@ -187,13 +187,13 @@ references in `manifests/`, `data/`, or `hiera.yaml`, and `simp/simp_options` is
 
 | file:line | key | default |
 |---|---|---|
-| `instance.pp:102` | `ds389::instance` / `password_policy` | `{}` |
-| `instance.pp:105` | `ds389::instance` / `tls_params` | `{}` |
-| `instance/tls.pp:62` | `ds389::instance::tls` / `dse_config` | `{}` |
-| `instance/service.pp:15` | `ds389::instance::service` / `ensure` (per `$name`) | `'running'` |
-| `instance/service.pp:16` | `ds389::instance::service` / `enable` (per `$name`) | `true` |
-| `instance/service.pp:17` | `ds389::instance::service` / `hasrestart` (per `$name`) | `true` |
-| `instance/attr/set.pp:153` | `ds389::config::attributes_requiring_restart` | `[]` |
+| `instance.pp` | `ds389::instance` / `password_policy` | `{}` |
+| `instance.pp` | `ds389::instance` / `tls_params` | `{}` |
+| `instance/tls.pp` | `ds389::instance::tls` / `dse_config` | `{}` |
+| `instance/service.pp` | `ds389::instance::service` / `ensure` (per `$name`) | `'running'` |
+| `instance/service.pp` | `ds389::instance::service` / `enable` (per `$name`) | `true` |
+| `instance/service.pp` | `ds389::instance::service` / `hasrestart` (per `$name`) | `true` |
+| `instance/attr/set.pp` | `ds389::config::attributes_requiring_restart` | `[]` |
 
 `data/common.yaml` sets deep-merge `lookup_options` (knockout prefix `--`) for
 the config hashes and package list, and ships the
@@ -203,10 +203,10 @@ the config hashes and package list, and ships the
 
 ## Gotchas / non-obvious details
 
-- **`ds389` is inert by design** (`init.pp:28-29`) — don't add always-on
+- **`ds389` is inert by design** (`init.pp`) — don't add always-on
   resources to it; it's a shared include.
 - **`purge => true, recurse => true`** on `$config_dir`/`$ldif_working_dir`
-  (`init.pp:42-43`) deletes unmanaged files placed there.
+  (`init.pp`) deletes unmanaged files placed there.
 - **Everything hinges on the `ds389__instances` fact** and the
   `.puppet_bootstrapped` marker. Tests must stub the fact (it's empty on a fresh
   compile). The `attr::set` header notes you must pass all params on first setup
@@ -217,7 +217,7 @@ the config hashes and package list, and ships the
 - **`self_sign_cert` is a string Enum `'True'`/`'False'`**, not a Boolean — it is
   written straight into the setup INI.
 - **`nsslapd-localssf` is set to `99999`** during LDAPI bootstrap so local
-  operations are treated as high-security (`instance.pp:248`).
+  operations are treated as high-security (`instance.pp`).
 - **TLS security posture**: `nsslapd-security=on`, `nsslapd-minssf=128`,
   `nsslapd-require-secure-binds=on` (from `data/common.yaml`) by default; the
   `'disabled'` TLS mode drops `minssf` to `0`.
