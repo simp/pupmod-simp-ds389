@@ -9,6 +9,22 @@ describe 'Set up 389DS' do
     'include ds389'
   end
 
+  # Exercise noop from a clean (uninstalled) state: on a fresh node the Sicura
+  # console previews the module with `puppet apply --noop`, which must not error
+  # even though nothing ds389 manages exists yet. Real idempotence is covered
+  # by the applies below. A post-convergence noop check is deliberately omitted:
+  # `puppet apply --noop --detailed-exitcodes` always exits 0, so it could never
+  # fail and would test nothing.
+  context 'in noop mode from a clean state' do
+    before(:context) do
+      on(hosts, 'puppet resource package 389-ds-base ensure=absent')
+    end
+
+    it 'applies without errors in noop mode' do
+      apply_manifest_on(hosts, manifest, catch_failures: true, noop: true)
+    end
+  end
+
   unless hosts.find { |h| h[:hypervisor] == 'docker' }
     hosts.each do |host|
       context "on #{host}" do
