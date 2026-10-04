@@ -160,9 +160,8 @@ describe 'Set up 389DS' do
       end
 
       it 'can login to 389DS' do
-        # rubocop:disable Layout/LineLength
+        # rubocop:disable-next Layout/LineLength
         on(host, %(ldapsearch -x -y "#{root_dn_password_file}" -D "#{hieradata['ds389::instances'][ds_root_name]['root_dn']}" -H ldapi://%2fvar%2frun%2fslapd-#{ds_root_name}.socket -b "cn=tasks,cn=config"))
-        # rubocop:enable Layout/LineLength
       end
 
       it 'reports 389ds instance facts for both instances' do
