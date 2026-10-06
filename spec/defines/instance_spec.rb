@@ -225,12 +225,11 @@ describe 'ds389::instance', type: :define do
                 .that_notifies("Exec[Setup #{title} DS]")
             }
 
-            # rubocop:disable Layout/LineLength
+            # rubocop:disable-next Layout/LineLength
             it {
               is_expected.to create_exec("Setup #{title} DS")
                 .with_command("/usr/sbin/dscreate from-file /usr/share/puppet_ds389_config/#{title}_ds_setup.inf > /dev/null 2>&1 && /usr/sbin/dsconf #{title} backend import userroot /usr/share/puppet_ds389_config/#{title}_ds_bootstrap.ldif > /dev/null 2>&1 && touch '/etc/dirsrv/slapd-#{title}/.puppet_bootstrapped'")
             }
-            # rubocop:enable Layout/LineLength
           end
 
           context 'when removing an instance' do
