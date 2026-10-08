@@ -602,4 +602,3 @@ Optional user-provided token. If absent, pwdfile.txt is used.
 Valid configuration item
 
 Alias of `Hash[String[1], Variant[Boolean,Integer[0],Float[0],String[1],Array[String[1],1]]]`
-
